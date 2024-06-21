@@ -1,0 +1,15 @@
+
+@font-face {
+        font-family: tulisan_keren;
+        src: url(GreatVibes-Regular.ttf);
+}
+
+h1{
+  font-family: 'tulisan_keren';
+  font-size: 70pt;
+  font-variant: inherit;
+}
+
+.radius{
+  border-radius: 20px;
+}

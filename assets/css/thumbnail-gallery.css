@@ -1,0 +1,28 @@
+/*!
+ * Start Bootstrap - Thumbnail Gallery HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+
+.thumb {
+    margin-bottom: 30px;
+}
+.thumb p{
+    font-size: 1.2em;
+}
+.thumb a:hover{
+    text-decoration: none;
+}
+
+#tekscopy{text-align: center;}
+hr{
+color:black;
+border-width: 4px;
+}
+a.thumbnail:hover{
+border-color: #00B6FF;
+}
+.thumb p{
+color: #333;
+}
