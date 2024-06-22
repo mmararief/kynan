@@ -6,8 +6,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])
     // Pastikan variabel jumlah dan id_produk terdefinisi
     if (isset($_POST['jumlah']) && isset($_POST['id_produk'])) {
         // Ambil nilai jumlah dan id_produk dari form
-        $jumlah = $_POST['jumlah'];
-        $id_produk = $_POST['id_produk'];
+        $jumlah = intval($_POST['jumlah']); // Pastikan jumlah adalah integer
+        $id_produk = intval($_POST['id_produk']); // Pastikan id_produk adalah integer
 
         // Pastikan nilai jumlah adalah angka positif
         if ($jumlah > 0) {
@@ -36,13 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])
         $_SESSION['pesan'] = "Data tidak lengkap.";
     }
 
-    // Redirect ke halaman sebelumnya atau halaman produk
-    if (isset($_SERVER["HTTP_REFERER"])) {
-        header("Location: " . $_SERVER["HTTP_REFERER"]);
-    } else {
-        header("Location: produk.php");
-    }
+    // Redirect ke halaman keranjang setelah penambahan produk berhasil
+    header("location: keranjang.php");
+    exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
 } else {
     // Jika tidak ada permintaan untuk menambahkan ke keranjang, redirect ke halaman produk
-    header("Location: produk.php");
+    header("location: keranjang.php");
+    exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
 }

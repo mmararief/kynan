@@ -3,49 +3,7 @@ session_start();
 require 'koneksi/koneksi.php';
 include 'header.php';
 
-// Cek apakah produk perlu dihapus dari keranjang
-if (isset($_GET['action']) && $_GET['action'] == 'delete') {
-  $id_produk = $_GET['id_produk'];
-  if (isset($_SESSION['keranjang'][$id_produk])) {
-    unset($_SESSION['keranjang'][$id_produk]);
-    $_SESSION['pesan'] = "Produk berhasil dihapus dari keranjang.";
-  } else {
-    $_SESSION['pesan'] = "Produk tidak ditemukan di keranjang.";
-  }
-  header("Location: keranjang.php");
-  exit;
-}
-
-// Cek apakah tombol "Add to Cart" diklik
-if (isset($_POST['tambah_ke_keranjang'])) {
-  if (isset($_POST['jumlah']) && isset($_POST['id_produk'])) {
-    $jumlah = $_POST['jumlah'];
-    $id_produk = $_POST['id_produk'];
-
-    if ($jumlah > 0) {
-      if (!isset($_SESSION['keranjang'])) {
-        $_SESSION['keranjang'] = array();
-      }
-
-      if (array_key_exists($id_produk, $_SESSION['keranjang'])) {
-        $_SESSION['keranjang'][$id_produk] += $jumlah;
-      } else {
-        $_SESSION['keranjang'][$id_produk] = $jumlah;
-      }
-
-      $_SESSION['pesan'] = "Produk berhasil ditambahkan ke keranjang.";
-    } else {
-      $_SESSION['pesan'] = "Jumlah tidak valid.";
-    }
-  } else {
-    $_SESSION['pesan'] = "Data tidak lengkap.";
-  }
-
-  header("Location: keranjang.php");
-  exit;
-}
-
-// Cek apakah form update keranjang dikirim via AJAX
+// Handle AJAX cart update
 if (isset($_POST['update_keranjang'])) {
   $id_produk = $_POST['id_produk'];
   $jumlah = $_POST['jumlah'];
@@ -56,7 +14,7 @@ if (isset($_POST['update_keranjang'])) {
     unset($_SESSION['keranjang'][$id_produk]);
   }
 
-  // Menghitung total belanja setelah update
+  // Calculate total cost
   $total_belanja = 0;
   foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
     $stmt = $koneksi->prepare('SELECT harga FROM produk WHERE id_produk = ?');
@@ -69,7 +27,17 @@ if (isset($_POST['update_keranjang'])) {
   exit;
 }
 
-
+if (isset($_GET['action']) && $_GET['action'] == 'delete') {
+  $id_produk = $_GET['id_produk'];
+  if (isset($_SESSION['keranjang'][$id_produk])) {
+    unset($_SESSION['keranjang'][$id_produk]);
+    $_SESSION['pesan'] = "Produk berhasil dihapus dari keranjang.";
+  } else {
+    $_SESSION['pesan'] = "Produk tidak ditemukan di keranjang.";
+  }
+  header("Location: keranjang.php");
+  exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -110,9 +78,6 @@ if (isset($_POST['update_keranjang'])) {
 </head>
 
 <body>
-  <br>
-  <br>
-  <br>
   <section class="clean-block clean-cart dark">
     <div class="container">
       <?php
@@ -121,7 +86,6 @@ if (isset($_POST['update_keranjang'])) {
         include 'footer.php';
         exit;
       }
-
       $total_belanja = 0;
       ?>
       <h2 class="text-center my-4 fs-2 text-darkgray">Keranjang</h2>
@@ -200,17 +164,17 @@ if (isset($_POST['update_keranjang'])) {
 
         productRow.querySelector('.harga').textContent = 'Rp ' + totalHarga.toLocaleString('id-ID');
 
-        // Perbarui total belanja di sisi klien
+        // Update total cost on client-side
         updateTotalBelanja();
 
-        // Kirim perubahan jumlah ke server dengan AJAX
+        // Send update to server via AJAX
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'keranjang.php', true);
+        xhr.open('POST', 'tambah_keranjang.php', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
           if (xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
-            console.log(response); // Tambahkan log untuk memeriksa respons
+            console.log(response); // Check the response
           }
         };
         xhr.send('update_keranjang=1&id_produk=' + id_produk + '&jumlah=' + jumlah);
@@ -221,7 +185,23 @@ if (isset($_POST['update_keranjang'])) {
       button.addEventListener('click', function() {
         const id_produk = this.getAttribute('data-id');
         if (confirm('Apakah Anda ingin menghapus produk ini dari keranjang?')) {
-          window.location.href = `keranjang.php?action=delete&id_produk=${id_produk}`;
+          fetch(`keranjang.php?action=delete&id_produk=${id_produk}`)
+            .then(response => {
+              if (response.ok) {
+                return response.text();
+              }
+              throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+              // Menghapus produk dari tampilan keranjang
+              this.closest('.product').remove();
+              // Perbarui total belanja di sisi klien
+              updateTotalBelanja();
+              console.log(data); // Log untuk debugging
+            })
+            .catch(error => {
+              console.error('There has been a problem with your fetch operation:', error);
+            });
         }
       });
     });

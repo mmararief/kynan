@@ -203,7 +203,7 @@ if (isset($_GET['price'])) {
                                 </div>
                                 <!-- Form untuk Menambahkan Produk ke Keranjang -->
                                 <div class="card-body">
-                                    <form action="keranjang.php" method="post">
+                                    <form action="tambah_keranjang.php" method="post">
                                         <div class="input-group">
                                             <input type="number" class="form-control" id="jumlah_<?php echo $isi['id_produk']; ?>" name="jumlah" value="1" min="1">
                                             <div class="input-group-prepend">
