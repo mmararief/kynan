@@ -203,16 +203,17 @@ if (isset($_GET['price'])) {
                                 </div>
                                 <!-- Form untuk Menambahkan Produk ke Keranjang -->
                                 <div class="card-body">
-                                    <form action="tambah_keranjang.php" method="post">
+                                    <form id="form_<?php echo $isi['id_produk']; ?>">
                                         <div class="input-group">
                                             <input type="number" class="form-control" id="jumlah_<?php echo $isi['id_produk']; ?>" name="jumlah" value="1" min="1">
                                             <div class="input-group-prepend">
-                                                <button type="submit" class="btn btn-success" name="tambah_ke_keranjang"><i class="fa fa-opencart"></i></button>
+                                                <button type="button" class="btn btn-success tambah-ke-keranjang" data-id="<?php echo $isi['id_produk']; ?>"><i class="fa fa-opencart"></i></button>
                                             </div>
                                         </div>
                                         <input type="hidden" name="id_produk" value="<?php echo $isi['id_produk']; ?>">
                                     </form>
                                 </div>
+
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -244,6 +245,50 @@ if (isset($_GET['price'])) {
     <?php include 'footer.php'; ?>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script>
+        document.querySelectorAll('.tambah-ke-keranjang').forEach(button => {
+            button.addEventListener('click', function() {
+                const id_produk = this.getAttribute('data-id');
+                const form = document.getElementById(`form_${id_produk}`);
+                const formData = new FormData(form);
+                formData.append('tambah_ke_keranjang', '1'); // Tambahkan parameter ini
+
+                fetch('tambah_keranjang.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Network response was not ok.');
+                    })
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.pesan);
+                            // Refresh bagian header
+                            refreshHeader();
+                        } else {
+                            alert(data.pesan);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+            });
+        });
+
+        function refreshHeader() {
+            fetch('header.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('header').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+    </script>
 </body>
 
 </html>

@@ -1,7 +1,8 @@
 <?php
 session_start();
+require 'koneksi/koneksi.php';
 
-// Jika tombol Tambah ke Keranjang ditekan
+// Cek apakah permintaan datang dari fetch (AJAX)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])) {
     // Pastikan variabel jumlah dan id_produk terdefinisi
     if (isset($_POST['jumlah']) && isset($_POST['id_produk'])) {
@@ -25,22 +26,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])
                 $_SESSION['keranjang'][$id_produk] = $jumlah;
             }
 
-            // Set pesan sukses
-            $_SESSION['pesan'] = "Produk berhasil ditambahkan ke keranjang.";
+            // Menghitung total belanja setelah update
+            $total_belanja = 0;
+            foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
+                $stmt = $koneksi->prepare('SELECT harga FROM produk WHERE id_produk = ?');
+                $stmt->execute([$id_produk]);
+                $produk = $stmt->fetch();
+                $total_belanja += $produk['harga'] * $jumlah;
+            }
+
+            // Keluarkan respons JSON
+            echo json_encode([
+                'status' => 'success',
+                'total_belanja' => number_format($total_belanja, 0, ',', '.'),
+                'pesan' => 'Produk berhasil ditambahkan ke keranjang!'
+            ]);
+
+            header("refresh:0;url=header.php");
+            exit;
         } else {
-            // Set pesan error jika jumlah tidak valid
-            $_SESSION['pesan'] = "Jumlah tidak valid.";
+            // Keluarkan respons JSON untuk error jumlah tidak valid
+            echo json_encode([
+                'status' => 'error',
+                'pesan' => 'Jumlah tidak valid.'
+            ]);
         }
     } else {
-        // Set pesan error jika data tidak lengkap
-        $_SESSION['pesan'] = "Data tidak lengkap.";
+        // Keluarkan respons JSON untuk data tidak lengkap
+        echo json_encode([
+            'status' => 'error',
+            'pesan' => 'Data tidak lengkap.'
+        ]);
     }
-
-    // Redirect ke halaman keranjang setelah penambahan produk berhasil
-    header("location: produk.php");
-    exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
+    exit; // Pastikan untuk menghentikan eksekusi skrip setelah mengeluarkan JSON
 } else {
-    // Jika tidak ada permintaan untuk menambahkan ke keranjang, redirect ke halaman produk
-    header("location: produk.php");
-    exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
+    // Jika tidak ada permintaan untuk menambahkan ke keranjang, keluarkan pesan kesalahan
+    echo json_encode([
+        'status' => 'error',
+        'pesan' => 'Permintaan tidak valid.'
+    ]);
+    exit; // Pastikan untuk menghentikan eksekusi skrip
 }
