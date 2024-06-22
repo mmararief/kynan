@@ -37,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])
     }
 
     // Redirect ke halaman keranjang setelah penambahan produk berhasil
-    header("location: keranjang.php");
+    header("location: produk.php");
     exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
 } else {
     // Jika tidak ada permintaan untuk menambahkan ke keranjang, redirect ke halaman produk
-    header("location: keranjang.php");
+    header("location: produk.php");
     exit; // Pastikan untuk menghentikan eksekusi skrip setelah redirect
 }
