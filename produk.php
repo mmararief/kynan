@@ -1,15 +1,4 @@
 <?php
-/*
-  | Source Code Aplikasi Toko PHP & MySQL
-  | 
-  | @package   : kynan
-  | @file      : produk.php 
-  | @author    : kynan@gmail.com
-  | 
-  | 
-  | 
-  | 
- */
 session_start();
 require 'koneksi/koneksi.php';
 include 'header.php';
@@ -20,7 +9,7 @@ $categories = $koneksi->query('SELECT * FROM kategori')->fetchAll();
 // Handle search query
 if (isset($_GET['cari'])) {
     $cari = strip_tags($_GET['cari']);
-    $kategori = isset($_GET['category']) ? $_GET['category'] : ''; // Ambil nilai kategori yang dipilih
+    $kategori = isset($_GET['category']) ? $_GET['category'] : '';
     if (!empty($kategori)) {
         $query = $koneksi->query('SELECT p.*, k.nama_kategori 
                                   FROM produk p 
@@ -36,7 +25,7 @@ if (isset($_GET['cari'])) {
                                   ORDER BY p.id_produk DESC')->fetchAll();
     }
 } else {
-    $kategori = isset($_GET['category']) ? $_GET['category'] : ''; // Ambil nilai kategori yang dipilih
+    $kategori = isset($_GET['category']) ? $_GET['category'] : '';
     if (!empty($kategori)) {
         $query = $koneksi->query('SELECT p.*, k.nama_kategori 
                                   FROM produk p 
@@ -51,22 +40,20 @@ if (isset($_GET['cari'])) {
     }
 }
 
-// Pagination
 $per_page = 16;
-$total_pages = ceil(count($query) / $per_page);
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$total_items = count($query);
+$total_pages = ceil($total_items / $per_page);
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max(1, min($page, $total_pages));
 $start = ($page - 1) * $per_page;
-$query = array_slice($query, $start, $per_page);
+$query_paginated = array_slice($query, $start, $per_page);
 
 // Simpan nilai kategori dan harga dalam parameter URL saat mengganti halaman
-$pagination_link = 'produk.php';
-if (isset($_GET['category'])) {
-    $pagination_link .= '?category=' . $_GET['category'];
-}
-if (isset($_GET['price'])) {
-    $pagination_link .= isset($_GET['category']) ? '&' : '?';
-    $pagination_link .= 'price=' . $_GET['price'];
-}
+$query_params = $_GET;
+unset($query_params['page']); // Hapus parameter page jika ada
+
+$pagination_link = 'produk.php?' . http_build_query($query_params);
+$pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . 'page=';
 ?>
 
 <!DOCTYPE html>
@@ -94,50 +81,34 @@ if (isset($_GET['price'])) {
             right: 5px;
         }
 
-        /* Perbesar tombol */
         .btn-outline-primary {
             font-size: 20px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
 
-        /* Perbesar input dan tombol */
         .form-control,
         .btn {
             font-size: 20px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
 
-        /* Perbesar bagian cari dan pilih kategori */
         .form-control.rounded {
             font-size: 20px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
 
         .custom-select {
             font-size: 20px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
 
-        /* Perbesar huruf nama produk, kategori, dan harga */
         .list-group-item.bg-outline-secondary {
             font-size: 15px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
 
-        /* Perbesar huruf nama produk, kategori, dan harga */
         .list-group-item.bg-outline-dark {
             font-size: 12px;
-            /* Sesuaikan dengan ukuran yang diinginkan */
         }
     </style>
 </head>
-<br>
-<br>
-<br>
 
 <body>
-    <br>
-    <br>
     <div class="container">
         <div class="card-body">
             <div class="card-body" style="position: relative;">
@@ -173,12 +144,9 @@ if (isset($_GET['price'])) {
                         </div>
                     </div>
                 </form>
-                <br>
-                <br>
-                <br>
                 <div class="row" id="produk">
                     <!-- Looping untuk Menampilkan Produk -->
-                    <?php foreach ($query as $isi) : ?>
+                    <?php foreach ($query_paginated as $isi) : ?>
                         <div class="col-md-3 col-sm-6">
                             <div class="card h-100">
                                 <div class="card-body">
@@ -189,31 +157,28 @@ if (isset($_GET['price'])) {
                                         </div>
                                     </a>
                                 </div>
-
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item bg-outline-secondary"><strong><?php echo $isi['nama_produk']; ?></strong></li>
                                 </ul>
                                 <hr>
                                 <div class="card-body">
-                                    <li class="list-group-item bg-outline-dark"><i class=""></i> Kategory: <?php echo $isi['nama_kategori']; ?></li>
+                                    <li class="list-group-item bg-outline-dark"><i class=""></i> Kategori: <?php echo $isi['nama_kategori']; ?></li>
                                     <li class="list-group-item bg-outline-dark">
                                         <i class=""></i> Harga: Rp. <?php echo number_format($isi['harga']); ?>
                                     </li>
-                                    <br>
                                 </div>
                                 <!-- Form untuk Menambahkan Produk ke Keranjang -->
                                 <div class="card-body">
                                     <form id="form_<?php echo $isi['id_produk']; ?>">
                                         <div class="input-group">
                                             <input type="number" class="form-control" id="jumlah_<?php echo $isi['id_produk']; ?>" name="jumlah" value="1" min="1">
-                                            <div class="input-group-prepend">
+                                            <div class="input-group-append">
                                                 <button type="button" class="btn btn-success tambah-ke-keranjang" data-id="<?php echo $isi['id_produk']; ?>"><i class="fa fa-opencart"></i></button>
                                             </div>
                                         </div>
                                         <input type="hidden" name="id_produk" value="<?php echo $isi['id_produk']; ?>">
                                     </form>
                                 </div>
-
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -222,25 +187,19 @@ if (isset($_GET['price'])) {
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
                         <?php if ($page > 1) : ?>
-                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link . '&page=' . ($page - 1); ?>">
-                                    &laquo; </a>
-                            </li>
+                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page - 1); ?>">&laquo;</a></li>
                         <?php endif; ?>
                         <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>"><a class="page-link" href="<?php echo $pagination_link . '&page=' . $i; ?>"><?php echo $i; ?></a></li>
+                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>"><a class="page-link" href="<?php echo $pagination_link_page . $i; ?>"><?php echo $i; ?></a></li>
                         <?php endfor; ?>
                         <?php if ($page < $total_pages) : ?>
-                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link . '&page=' . ($page + 1); ?>">&raquo;</a></li>
+                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page + 1); ?>">&raquo;</a></li>
                         <?php endif; ?>
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
-
-    <br>
-    <br>
-    <br>
 
     <?php include 'footer.php'; ?>
 
@@ -251,22 +210,16 @@ if (isset($_GET['price'])) {
                 const id_produk = this.getAttribute('data-id');
                 const form = document.getElementById(`form_${id_produk}`);
                 const formData = new FormData(form);
-                formData.append('tambah_ke_keranjang', '1'); // Tambahkan parameter ini
+                formData.append('tambah_ke_keranjang', '1');
 
                 fetch('tambah_keranjang.php', {
                         method: 'POST',
                         body: formData
                     })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                        throw new Error('Network response was not ok.');
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
                             alert(data.pesan);
-                            // Refresh bagian header
                             refreshHeader();
                         } else {
                             alert(data.pesan);
