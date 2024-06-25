@@ -49,13 +49,60 @@ $hasil = $koneksi->query("SELECT * FROM produk WHERE id_produk = '$id'")->fetch(
                     </ul>
                     <hr />
                     <center>
-                        <a href="booking.php?id=<?php echo $hasil['id_mobil']; ?>" class="btn btn-success">Booking now!</a>
-                        <a href="produk.php" class="btn btn-info">Back</a>
+                    <form id="form_<?php echo $isi['id_produk']; ?>">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="jumlah_<?php echo $hasil['id_produk']; ?>" name="jumlah" value="1" min="1">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-success tambah-ke-keranjang" data-id="<?php echo $hasil['id_produk']; ?>"><i class="fa fa-opencart"></i></button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="id_produk" value="<?php echo $hasil['id_produk']; ?>">
+                                    </form>
+                    <a href="produk.php" class="btn btn-info">Back</a>
                     </center>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+        document.querySelectorAll('.tambah-ke-keranjang').forEach(button => {
+            button.addEventListener('click', function() {
+                const id_produk = this.getAttribute('data-id');
+                const form = document.getElementById(`form_${id_produk}`);
+                const formData = new FormData(form);
+                formData.append('tambah_ke_keranjang', '1');
+
+                fetch('tambah_keranjang.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.pesan);
+                            refreshHeader();
+                        } else {
+                            alert(data.pesan);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+            });
+        });
+
+        function refreshHeader() {
+            fetch('header.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('header').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+    </script>
 
 

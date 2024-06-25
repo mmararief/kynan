@@ -105,6 +105,37 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
         .list-group-item.bg-outline-dark {
             font-size: 12px;
         }
+
+        .card {
+        position: relative;
+        }
+
+    .card img {
+        width: 100%;
+        height: auto;
+        }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 20px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        }
+
+    .card:hover .overlay {
+        opacity: 1;
+        }
+
     </style>
 </head>
 
@@ -144,18 +175,22 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                         </div>
                     </div>
                 </form>
+
                 <div class="row" id="produk">
                     <!-- Looping untuk Menampilkan Produk -->
                     <?php foreach ($query_paginated as $isi) : ?>
                         <div class="col-md-3 col-sm-6">
                             <div class="card h-100">
+                                <a href="detail.php?id=<?php echo $isi['id_produk']; ?>" style="position: relative; display: block;">
+                                    <img src="admin/assets/image/<?php echo $isi['gambar']; ?>" class="card-img-top" alt="...">
+                                    <div class="overlay">Tap to see detail</div>
+                                </a>
                                 <div class="card-body">
-                                    <a href="detail.php?id=<?php echo $isi['id_produk']; ?>">
-                                        <img src="admin/assets/image/<?php echo $isi['gambar']; ?>" class="card-img-top" alt="...">
-                                        <div class="btn-container">
-                                            <div class="btn <?= $isi['status'] == 'PO' ? 'btn-danger' : 'btn-primary' ?> btn-primary btn-sm mt-2 ml-2"><strong><?= $isi['status'] == 'PO' ? 'PO' : 'Tidak PO' ?></strong></div>
+                                    <div class="btn-container">
+                                        <div class="btn <?= $isi['status'] == 'PO' ? 'btn-danger' : 'btn-primary' ?> btn-primary btn-sm mt-2 ml-2">
+                                            <strong><?= $isi['status'] == 'PO' ? 'PO' : 'Tidak PO' ?></strong>
                                         </div>
-                                    </a>
+                                    </div>
                                 </div>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item bg-outline-secondary"><strong><?php echo $isi['nama_produk']; ?></strong></li>
@@ -219,7 +254,6 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            alert(data.pesan);
                             refreshHeader();
                         } else {
                             alert(data.pesan);
