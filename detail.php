@@ -33,18 +33,17 @@ $hasil = $koneksi->query("SELECT * FROM produk WHERE id_produk = '$id'")->fetch(
                         <?php echo $hasil['deskripsi']; ?>
                     </p>
                     <ul class="list-group list-group-flush">
-                        <?php if ($hasil['status'] == 'Tersedia') { ?>
-                            <li class="list-group-item bg-primary text-white">
-                                <i class="fa fa-check"></i> Available
+                        <?php if ($hasil['status'] == 'PO') { ?>
+                            <li class="list-group-item bg-danger text-white">
+                                <i class="fa "></i> Pre-Order
                             </li>
                         <?php } else { ?>
-                            <li class="list-group-item bg-danger text-white">
-                                <i class="fa fa-close"></i> Not Available
+                            <li class="list-group-item bg-primary text-white">
+                                <i class="fa "></i> Tidak Pre-Order
                             </li>
                         <?php } ?>
-                        <li class="list-group-item bg-info text-white"><i class="fa fa-check"></i> Free Snack & Drinks</li>
                         <li class="list-group-item bg-dark text-white">
-                            <i class="fa fa-money"></i> Rp. <?php echo number_format($hasil['harga']); ?>/ day
+                            <i class="fa fa-money"></i> Rp. <?php echo number_format($hasil['harga']); ?>
                         </li>
                     </ul>
                     <hr />
