@@ -185,6 +185,8 @@ if ($_GET['id'] == 'daftar') {
 
 
 if ($_GET['id'] == 'konfirmasi') {
+    session_start();  // Start the session to use session variables
+
     $tanggal = date('Y-m-d H:i:s');
     $via = $_POST['via'];
     $nama = $_POST['nama'];
@@ -206,10 +208,48 @@ if ($_GET['id'] == 'konfirmasi') {
     $stmt = $koneksi->prepare('INSERT INTO konfirmasi (tanggal, via, nama, nama_produk, whatsapp, alamat, metode_pembayaran, jumlah, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([$tanggal, $via, $nama, $nama_produk, $whatsapp, $alamat, $metode_pembayaran, $total_belanja, $status]);
 
+    // Store order details in session for the confirmation page
+    $_SESSION['order_details'] = [
+        'tanggal' => $tanggal,
+        'via' => $via,
+        'nama' => $nama,
+        'nama_produk' => $nama_produk,
+        'whatsapp' => $whatsapp,
+        'alamat' => $alamat,
+        'metode_pembayaran' => $metode_pembayaran,
+        'total_belanja' => $total_belanja,
+        'status' => $status
+    ];
+
     // Hapus keranjang setelah konfirmasi
     unset($_SESSION['keranjang']);
 
-    // Redirect ke halaman terima kasih atau halaman konfirmasi selesai
-    header('Location: ../konfirmasi_sukses.php');
+    // Send POST request to API endpoint
+    $url = 'http://localhost:8000/order-confirmation';
+    $data = [
+        'via' => $via,
+        'nama' => $nama,
+        'nama_produk' => $nama_produk,
+        'whatsapp' => $whatsapp,
+        'alamat' => $alamat,
+        'metode_pembayaran' => $metode_pembayaran,
+        'jumlah' => $total_belanja,
+        'status' => $status
+    ];
+    $options = [
+        'http' => [
+            'header'  => "Content-type: application/json\r\n",
+            'method'  => 'POST',
+            'content' => json_encode($data),
+        ],
+    ];
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    if ($result === FALSE) {
+        // Handle error
+    }
+
+    // Redirect to the confirmation page
+    header('Location: ../konfirmasi_berhasil.php');
     exit();
 }

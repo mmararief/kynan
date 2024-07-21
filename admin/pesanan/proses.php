@@ -153,6 +153,7 @@ if (isset($_GET['aksi'])) {
                 $tanggal = $_POST['tanggal'];
                 $nama_produk = $_POST['nama_produk'];
                 $jumlah = $_POST['jumlah'];
+                $hasil = $koneksi->query("SELECT * FROM konfirmasi WHERE id = '$id'")->fetch();
 
                 // Insert data into pemasukan table
                 $sql_insert = "INSERT INTO pemasukan (tanggal, keterangan, sumber, jumlah) VALUES (?, ?, 'Penjualan', ?)";
@@ -161,11 +162,36 @@ if (isset($_GET['aksi'])) {
 
                 if ($stmt_insert) {
                     // Update the status of the order to 'Selesai'
+
+
+
                     $sql_update = "UPDATE konfirmasi SET status = 'Selesai' WHERE id = ?";
                     $stmt_update = $koneksi->prepare($sql_update);
                     $stmt_update->execute([$id]);
 
+
                     if ($stmt_update) {
+
+                        $url = 'http://localhost:8000/success-order';
+                        $data = [
+                            'via' => $hasil['via'],
+                            'nama' => $hasil['nama'],
+                            'nama_produk' => $hasil['nama_produk'],
+                            'whatsapp' => $hasil['whatsapp'],
+                            'alamat' => $hasil['alamat'],
+                            'metode_pembayaran' => $hasil['metode_pembayaran'],
+                            'jumlah' => $hasil['total_belanja'],
+                            'status' => $hasil['status']
+                        ];
+                        $options = [
+                            'http' => [
+                                'header'  => "Content-type: application/json\r\n",
+                                'method'  => 'POST',
+                                'content' => json_encode($data),
+                            ],
+                        ];
+                        $context  = stream_context_create($options);
+                        $result = file_get_contents($url, false, $context);
                         echo json_encode(['success' => true]);
                     } else {
                         echo json_encode(['success' => false, 'message' => 'Failed to update order status']);

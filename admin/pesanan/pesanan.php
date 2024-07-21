@@ -47,15 +47,15 @@ $total_pages = ceil($total_items / $items_per_page);
         <div class="row">
             <div class="container">
                 <div class="card">
-                    <div class="card-header text-white bg-primary">
+                    <div class="card-header bg-primary text-white">
                         <h4 class="card-title text-white">
-                            Pesanan Masuk <br><br>
-                            <a class="btn btn-light" href="tambah.php">Tambah Pesanan</a>
+                            Pesanan Masuk
+                            <a class="btn btn-light float-right" href="tambah.php">Tambah Pesanan</a>
                         </h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive"><br>
-                            <table class="table table-bordered">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -81,7 +81,7 @@ $total_pages = ceil($total_items / $items_per_page);
 
                                     foreach ($hasil as $isi) {
                                     ?>
-                                        <tr>
+                                        <tr id="order-<?= $isi['id']; ?>">
                                             <td><?php echo $no; ?></td>
                                             <td><?php echo $isi['tanggal']; ?></td>
                                             <td><?php echo $isi['via']; ?></td>
@@ -90,13 +90,12 @@ $total_pages = ceil($total_items / $items_per_page);
                                             <td><?php echo $isi['whatsapp']; ?></td>
                                             <td><?php echo $isi['alamat']; ?></td>
                                             <td><?php echo $isi['metode_pembayaran']; ?></td>
-                                            <td><?php echo $isi['status']; ?></td>
+                                            <td id="status-<?= $isi['id']; ?>"><?php echo $isi['status']; ?></td>
                                             <td><?php echo number_format($isi['jumlah'], 0, ',', '.'); ?></td>
                                             <td>
-                                                <!-- Tambahkan tombol-tombol aksi sesuai kebutuhan -->
-                                                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="prosesPesanan('<?php echo $isi['whatsapp']; ?>')">Proses</a>
-                                                <a class="btn btn-danger btn-sm" href="#" role="button" onclick="hapusPesanan(<?php echo $isi['id']; ?>)">Hapus</a>
-                                                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="selesaiPesanan('<?php echo $isi['id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['jumlah']; ?>', '<?php echo $isi['whatsapp']; ?>')">Selesai</a>
+                                                <a class="btn btn-primary btn-sm" role="button" onclick="prosesPesanan('<?php echo $isi['whatsapp']; ?>')">Proses</a>
+                                                <a class="btn btn-danger btn-sm" role="button" onclick="hapusPesanan(<?php echo $isi['id']; ?>)">Hapus</a>
+                                                <a class="btn btn-success btn-sm" role="button" onclick="selesaiPesanan('<?php echo $isi['id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['jumlah']; ?>', '<?php echo $isi['whatsapp']; ?>')">Selesai</a>
                                             </td>
                                         </tr>
                                     <?php $no++;
@@ -134,10 +133,11 @@ $total_pages = ceil($total_items / $items_per_page);
         </div>
     </section>
 </main>
-
 <?php include '../footer.php'; ?>
 
 <!-- SweetAlert -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -148,7 +148,7 @@ $total_pages = ceil($total_items / $items_per_page);
                 cancelButton: 'btn btn-danger'
             },
             buttonsStyling: false
-        })
+        });
 
         swalWithBootstrapButtons.fire({
             title: 'Are you sure?',
@@ -160,7 +160,6 @@ $total_pages = ceil($total_items / $items_per_page);
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Lakukan proses penghapusan di sini
                 $.ajax({
                     url: 'proses.php?aksi=hapus&id=' + id,
                     type: 'GET',
@@ -170,7 +169,7 @@ $total_pages = ceil($total_items / $items_per_page);
                             'Your file has been deleted.',
                             'success'
                         ).then(() => {
-                            window.location.href = 'pesanan.php';
+                            document.getElementById('order-' + id).remove();
                         });
                     }
                 });
@@ -179,9 +178,9 @@ $total_pages = ceil($total_items / $items_per_page);
                     'Cancelled',
                     'Your imaginary file is safe :)',
                     'error'
-                )
+                );
             }
-        })
+        });
     }
 
     function prosesPesanan(whatsapp) {
@@ -191,10 +190,6 @@ $total_pages = ceil($total_items / $items_per_page);
     }
 
     function selesaiPesanan(id, tanggal, nama_produk, jumlah, whatsapp) {
-        const message = "Pesanan Anda Telah Selesai";
-        const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-
         $.ajax({
             url: 'proses.php?aksi=selesai',
             type: 'POST',
@@ -203,32 +198,17 @@ $total_pages = ceil($total_items / $items_per_page);
                 tanggal: tanggal,
                 nama_produk: nama_produk,
                 jumlah: jumlah
+
             },
             success: function(response) {
-                const res = JSON.parse(response);
-                if (res.success) {
-                    Swal.fire(
-                        'Success',
-                        'Pesanan telah selesai',
-                        'success'
-                    ).then(() => {
-                        window.location.href = 'pesanan.php';
-                    });
-                } else {
-                    Swal.fire(
-                        'Error',
-                        res.message,
-                        'error'
-                    );
-                }
-            },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseText);
+                console.log('Server Response:', response); // Log the response for 
                 Swal.fire(
-                    'Error',
-                    'Gagal menyelesaikan pesanan',
-                    'error'
-                );
+                    'Success',
+                    'Pesanan telah selesai',
+                    'success'
+                ).then(() => {
+                    document.getElementById('status-' + id).innerText = 'Selesai';
+                });
             }
         });
     }

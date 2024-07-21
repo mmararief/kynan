@@ -107,35 +107,34 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
         }
 
         .card {
-        position: relative;
+            position: relative;
         }
 
-    .card img {
-        width: 100%;
-        height: auto;
+        .card img {
+            width: 100%;
+            height: auto;
         }
 
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        font-size: 20px;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s;
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-    .card:hover .overlay {
-        opacity: 1;
+        .card:hover .overlay {
+            opacity: 1;
         }
-
     </style>
 </head>
 
@@ -255,6 +254,7 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                     .then(data => {
                         if (data.status === 'success') {
                             refreshHeader();
+                            refreshFooter();
                         } else {
                             alert(data.pesan);
                         }
@@ -270,6 +270,17 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                 .then(response => response.text())
                 .then(html => {
                     document.querySelector('header').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+
+        function refreshFooter() {
+            fetch('footer.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('footer').innerHTML = html;
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
