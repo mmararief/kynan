@@ -1,12 +1,4 @@
 <?php
-/*
-  | Source Code Aplikasi Toko PHP & MySQL
-  | 
-  | @package   : kynan
-  | @file      : tambah.php 
-  | author     : kynan@gmail.com
-  | 
- */
 require '../../koneksi/koneksi.php';
 $title_web = 'Tambah Pesanan';
 include '../header.php';
@@ -33,8 +25,9 @@ if (empty($_SESSION['USER'])) {
             <div class="container">
                 <div class="card">
                     <div class="card-header text-white bg-primary">
-                        <h4 class="card-title">
+                        <h4 class="card-title text-white">
                             Tambah Pesanan
+                            <br><br>
                             <div class="float-right">
                                 <a class="btn btn-warning" href="pesanan.php" role="button">Kembali</a>
                             </div>
@@ -42,38 +35,70 @@ if (empty($_SESSION['USER'])) {
                     </div>
                     <div class="card-body">
                         <form method="POST" action="proses.php?aksi=tambah">
-                            <div class="form-group">
-                                <label for="tanggal">Tanggal</label>
-                                <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="tanggal">Tanggal</label>
+                                    <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="via">Via</label>
+                                    <input type="text" class="form-control" id="via" name="via" required>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="via">Via</label>
-                                <input type="text" class="form-control" id="via" name="via" required>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="nama">Nama</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="whatsapp">WhatsApp</label>
+                                    <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="62" required>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="nama">Nama</label>
-                                <input type="text" class="form-control" id="nama" name="nama" required>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="alamat">Alamat (Opsional)</label>
+                                    <input type="text" class="form-control" id="alamat" name="alamat">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="nama_produk">Nama Produk</label>
-                                <input type="text" class="form-control" id="nama_produk" name="nama_produk" required>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="metode_pembayaran">Metode Pembayaran</label>
+                                    <input type="text" class="form-control" id="metode_pembayaran" name="metode_pembayaran" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="status">Status</label>
+                                    <select class="form-control" id="status" name="status" required>
+                                        <option value="">Pilih Status</option>
+                                        <option value="Selesai">Selesai</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="whatsapp">WhatsApp</label>
-                                <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="62" required>
+                            <hr>
+                            <div id="produk-wrapper">
+                                <div class="produk-item">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-8">
+                                            <label for="produk">Produk</label>
+                                            <select class="form-control" id="produk" name="produk[]" required>
+                                                <option value="">Pilih Produk</option>
+                                                <?php
+                                                $products = $koneksi->query('SELECT * FROM produk')->fetchAll();
+                                                foreach ($products as $product) {
+                                                    echo '<option value="' . $product['id_produk'] . '">' . $product['nama_produk'] . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="jumlah">Jumlah</label>
+                                            <input type="number" class="form-control" id="jumlah" name="jumlah[]" required>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="alamat">Alamat (Opsional)</label>
-                                <input type="text" class="form-control" id="alamat" name="alamat">
-                            </div>
-                            <div class="form-group">
-                                <label for="metode_pembayaran">Metode Pembayaran</label>
-                                <input type="text" class="form-control" id="metode_pembayaran" name="metode_pembayaran" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="jumlah">Total Belanja</label>
-                                <input type="text" class="form-control" id="jumlah" name="jumlah" required>
-                            </div>
+                            <button type="button" class="btn btn-secondary mt-3" id="add-produk">Tambah Produk</button>
                             <button type="submit" class="btn btn-primary mt-3">Simpan</button>
                         </form>
                     </div>
@@ -94,6 +119,30 @@ if (empty($_SESSION['USER'])) {
             if (!this.value.startsWith('62')) {
                 this.value = '62';
             }
+        });
+
+        $('#add-produk').on('click', function() {
+            var newProdukItem = `
+                <div class="produk-item mt-3">
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label for="produk">Produk</label>
+                            <select class="form-control" id="produk" name="produk[]" required>
+                                <option value="">Pilih Produk</option>
+                                <?php
+                                foreach ($products as $product) {
+                                    echo '<option value="' . $product['id_produk'] . '">' . $product['nama_produk'] . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="jumlah">Jumlah</label>
+                            <input type="number" class="form-control" id="jumlah" name="jumlah[]" required>
+                        </div>
+                    </div>
+                </div>`;
+            $('#produk-wrapper').append(newProdukItem);
         });
     });
 </script>

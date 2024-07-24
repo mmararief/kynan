@@ -43,7 +43,7 @@ $hasil = $koneksi->query("SELECT * FROM produk WHERE id_produk = '$id'")->fetch(
                             </li>
                         <?php } ?>
                         <li class="list-group-item bg-dark text-white">
-                            <i class="fa fa-money"></i> Rp. <?php echo number_format($hasil['harga']); ?>
+                            <i class="fa fa-money"></i> Rp. <?php echo number_format($hasil['harga_jual']); ?>
                         </li>
                     </ul>
                     <hr />

@@ -198,7 +198,7 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                                 <div class="card-body">
                                     <li class="list-group-item bg-outline-dark"><i class=""></i> Kategori: <?php echo $isi['nama_kategori']; ?></li>
                                     <li class="list-group-item bg-outline-dark">
-                                        <i class=""></i> Harga: Rp. <?php echo number_format($isi['harga']); ?>
+                                        <i class=""></i> Harga: Rp. <?php echo number_format($isi['harga_jual']); ?>
                                     </li>
                                 </div>
                                 <!-- Form untuk Menambahkan Produk ke Keranjang -->
@@ -254,7 +254,6 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                     .then(data => {
                         if (data.status === 'success') {
                             refreshHeader();
-                            refreshFooter();
                         } else {
                             alert(data.pesan);
                         }
@@ -269,12 +268,14 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
             fetch('header.php')
                 .then(response => response.text())
                 .then(html => {
+                    console.log('Header HTML:', html); // Logging the HTML response
                     document.querySelector('header').innerHTML = html;
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
         }
+
 
         function refreshFooter() {
             fetch('footer.php')

@@ -34,28 +34,55 @@ if (!isset($_SESSION)) {
 
 if ($_GET['aksi'] == 'tambah') {
     // Check if the necessary data has been sent via POST method
-    if (isset($_POST['tanggal'], $_POST['via'], $_POST['nama'], $_POST['nama_produk'], $_POST['whatsapp'], $_POST['alamat'], $_POST['metode_pembayaran'], $_POST['jumlah'])) {
+    if (isset($_POST['tanggal'], $_POST['via'], $_POST['nama'], $_POST['whatsapp'], $_POST['metode_pembayaran'], $_POST['status'], $_POST['produk'], $_POST['jumlah'])) {
         // Retrieve the values from the form
         $tanggal = $_POST['tanggal'];
         $via = $_POST['via'];
         $nama = $_POST['nama'];
-        $nama_produk = $_POST['nama_produk'];
         $whatsapp = $_POST['whatsapp'];
-        $alamat = $_POST['alamat'];
+        $alamat = $_POST['alamat'] ?? null;
         $metode_pembayaran = $_POST['metode_pembayaran'];
+        $status = $_POST['status'];
+        $produk = $_POST['produk'];
         $jumlah = $_POST['jumlah'];
 
-        // Prepare the data for insertion into the database
-        $data = array($tanggal, $via, $nama, $nama_produk, $whatsapp, $alamat, $metode_pembayaran, $jumlah);
+        // Start the transaction
+        $koneksi->beginTransaction();
 
-        // Create SQL query to insert data into the konfirmasi table
-        $sql = 'INSERT INTO konfirmasi (tanggal, via, nama, nama_produk, whatsapp, alamat, metode_pembayaran, jumlah) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        try {
+            // Insert into the transaksi table
+            $sql = 'INSERT INTO transaksi (tanggal, via, nama, whatsapp, alamat, metode_pembayaran, status, total) VALUES (?, ?, ?, ?, ?, ?, ?, 0)';
+            $stmt = $koneksi->prepare($sql);
+            $stmt->execute([$tanggal, $via, $nama, $whatsapp, $alamat, $metode_pembayaran, $status]);
 
-        // Prepare the SQL statement
-        $stmt = $koneksi->prepare($sql);
+            // Get the last inserted id_transaksi
+            $id_transaksi = $koneksi->lastInsertId();
+            $total = 0;
 
-        // Execute the SQL statement with the prepared data
-        if ($stmt->execute($data)) {
+            // Insert into the detailtransaksi table
+            for ($i = 0; $i < count($produk); $i++) {
+                $id_produk = $produk[$i];
+                $jumlah_produk = $jumlah[$i];
+
+                // Get the product price
+                $stmt = $koneksi->prepare('SELECT harga_jual FROM produk WHERE id_produk = ?');
+                $stmt->execute([$id_produk]);
+                $harga_produk = $stmt->fetchColumn();
+
+                $subtotal = $harga_produk * $jumlah_produk;
+                $total += $subtotal;
+
+                $stmt = $koneksi->prepare('INSERT INTO detailtransaksi (id_transaksi, id_produk, jumlah, harga, subtotal) VALUES (?, ?, ?, ?, ?)');
+                $stmt->execute([$id_transaksi, $id_produk, $jumlah_produk, $harga_produk, $subtotal]);
+            }
+
+            // Update the total in the transaksi table
+            $stmt = $koneksi->prepare('UPDATE transaksi SET total = ? WHERE id_transaksi = ?');
+            $stmt->execute([$total, $id_transaksi]);
+
+            // Commit the transaction
+            $koneksi->commit();
+
             // Display success message using SweetAlert2
             echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
             echo '<script>
@@ -67,7 +94,9 @@ if ($_GET['aksi'] == 'tambah') {
                     });
                 </script>';
             exit;
-        } else {
+        } catch (Exception $e) {
+            // Rollback the transaction if there is an error
+            $koneksi->rollBack();
             // Display error message using SweetAlert2
             echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
             echo '<script>
@@ -88,23 +117,55 @@ if ($_GET['aksi'] == 'tambah') {
     }
 }
 
+
 if ($_GET['aksi'] == 'hapus') {
     $id = $_GET['id'];
 
-    $sql = "DELETE FROM konfirmasi WHERE id = ?";
-    $stmt = $koneksi->prepare($sql);
-    $stmt->execute(array($id));
+    // Start the transaction
+    $koneksi->beginTransaction();
 
-    echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
-    echo '<script>
-        Swal.fire({
-            icon: "success",
-            title: "Sukses Hapus Pesanan",
-        }).then(() => {
-            window.location = "pesanan.php";
-        });
-    </script>';
-    exit;
+    try {
+        // Delete from detailtransaksi table first
+        $sql_detail = "DELETE FROM detailtransaksi WHERE id_transaksi = ?";
+        $stmt_detail = $koneksi->prepare($sql_detail);
+        $stmt_detail->execute(array($id));
+
+        // Then delete from transaksi table
+        $sql_transaksi = "DELETE FROM transaksi WHERE id_transaksi = ?";
+        $stmt_transaksi = $koneksi->prepare($sql_transaksi);
+        $stmt_transaksi->execute(array($id));
+
+        // Commit the transaction
+        $koneksi->commit();
+
+        // Display success message using SweetAlert2
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+        echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Sukses Hapus Pesanan",
+                }).then(() => {
+                    window.location = "pesanan.php";
+                });
+              </script>';
+        exit;
+    } catch (Exception $e) {
+        // Rollback the transaction if there is an error
+        $koneksi->rollBack();
+
+        // Display error message using SweetAlert2
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+        echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal Hapus Pesanan",
+                    text: "Terjadi kesalahan saat menghapus data.",
+                }).then(() => {
+                    window.location = "pesanan.php";
+                });
+              </script>';
+        exit;
+    }
 }
 
 if ($_GET['aksi'] == 'edit') {
@@ -125,13 +186,13 @@ if ($_GET['aksi'] == 'edit') {
 
     echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
     echo '<script>
-        Swal.fire({
-            icon: "success",
-            title: "Sukses Edit Pesanan",
-        }).then(() => {
-            window.location = "pesanan.php";
-        });
-    </script>';
+    Swal.fire({
+        icon: "success",
+        title: "Sukses Edit Pesanan",
+    }).then(() => {
+        window.location = "pesanan.php";
+    });
+</script>';
     exit;
 }
 
@@ -141,7 +202,7 @@ if (isset($_GET['aksi'])) {
     switch ($aksi) {
         case 'hapus':
             $id = $_GET['id'];
-            $sql = "DELETE FROM konfirmasi WHERE id = ?";
+            $sql = "DELETE FROM transaksi WHERE id_transaksi = ?";
             $stmt = $koneksi->prepare($sql);
             $stmt->execute([$id]);
             echo json_encode(['success' => true]);
@@ -153,54 +214,70 @@ if (isset($_GET['aksi'])) {
                 $tanggal = $_POST['tanggal'];
                 $nama_produk = $_POST['nama_produk'];
                 $jumlah = $_POST['jumlah'];
-                $hasil = $koneksi->query("SELECT * FROM konfirmasi WHERE id = '$id'")->fetch();
 
-                // Insert data into pemasukan table
-                $sql_insert = "INSERT INTO pemasukan (tanggal, keterangan, sumber, jumlah) VALUES (?, ?, 'Penjualan', ?)";
-                $stmt_insert = $koneksi->prepare($sql_insert);
-                $stmt_insert->execute([$tanggal, $nama_produk, $jumlah]);
+                // Fetch the transaction details
+                $sql_transaksi = "SELECT * FROM transaksi WHERE id_transaksi = ?";
+                $stmt_transaksi = $koneksi->prepare($sql_transaksi);
+                $stmt_transaksi->execute([$id]);
+                $hasil_transaksi = $stmt_transaksi->fetch();
 
-                if ($stmt_insert) {
-                    // Update the status of the order to 'Selesai'
+                // Fetch the details of the transaction
+                $sql_detail = "SELECT d.id_produk, p.nama_produk, d.jumlah, d.harga, d.subtotal
+FROM detailtransaksi d
+JOIN produk p ON d.id_produk = p.id_produk
+WHERE d.id_transaksi = ?";
+                $stmt_detail = $koneksi->prepare($sql_detail);
+                $stmt_detail->execute([$id]);
+                $detail_transaksi = $stmt_detail->fetchAll();
 
+                // Update the transaction status
+                $sql_update = "UPDATE transaksi SET status = 'Selesai' WHERE id_transaksi = ?";
+                $stmt_update = $koneksi->prepare($sql_update);
+                $stmt_update->execute([$id]);
 
+                if ($stmt_update) {
+                    // Prepare detailed data for API request
+                    $data = [
+                        'id' => $id,
+                        'via' => $hasil_transaksi['via'],
+                        'nama' => $hasil_transaksi['nama'],
+                        'tanggal' => $hasil_transaksi['tanggal'],
+                        'whatsapp' => $hasil_transaksi['whatsapp'],
+                        'alamat' => $hasil_transaksi['alamat'],
+                        'metode_pembayaran' => $hasil_transaksi['metode_pembayaran'],
+                        'status' => 'Selesai',
+                        'total' => $hasil_transaksi['total'],
+                        'details' => array_map(function ($item) {
+                            return [
+                                'nama_produk' => $item['nama_produk'],
+                                'jumlah' => $item['jumlah'],
+                                'harga_satuan' => $item['harga'],
+                                'subtotal' => $item['subtotal']
+                            ];
+                        }, $detail_transaksi)
+                    ];
 
-                    $sql_update = "UPDATE konfirmasi SET status = 'Selesai' WHERE id = ?";
-                    $stmt_update = $koneksi->prepare($sql_update);
-                    $stmt_update->execute([$id]);
+                    // Send the data to the API
+                    $url = 'http://localhost:8000/send-invoice';
+                    $options = [
+                        'http' => [
+                            'header' => "Content-type: application/json\r\n",
+                            'method' => 'POST',
+                            'content' => json_encode($data),
+                        ],
+                    ];
+                    $context = stream_context_create($options);
+                    $result = file_get_contents($url, false, $context);
 
-
-                    if ($stmt_update) {
-
-                        $url = 'http://localhost:8000/success-order';
-                        $data = [
-                            'via' => $hasil['via'],
-                            'nama' => $hasil['nama'],
-                            'nama_produk' => $hasil['nama_produk'],
-                            'whatsapp' => $hasil['whatsapp'],
-                            'alamat' => $hasil['alamat'],
-                            'metode_pembayaran' => $hasil['metode_pembayaran'],
-                            'jumlah' => $hasil['total_belanja'],
-                            'status' => $hasil['status']
-                        ];
-                        $options = [
-                            'http' => [
-                                'header'  => "Content-type: application/json\r\n",
-                                'method'  => 'POST',
-                                'content' => json_encode($data),
-                            ],
-                        ];
-                        $context  = stream_context_create($options);
-                        $result = file_get_contents($url, false, $context);
-                        echo json_encode(['success' => true]);
-                    } else {
-                        echo json_encode(['success' => false, 'message' => 'Failed to update order status']);
-                    }
+                    echo json_encode(['success' => true]);
                 } else {
-                    echo json_encode(['success' => false, 'message' => 'Failed to insert data into pemasukan']);
+                    echo json_encode(['success' => false, 'message' => 'Failed to update order status']);
                 }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid request method']);
             }
             break;
     }
 }
+
 ?>

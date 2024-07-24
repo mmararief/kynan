@@ -86,7 +86,7 @@ $total_pages = ceil($total_items / $items_per_page);
                                             <td><img src="../assets/image/<?php echo $isi['gambar']; ?>" class="img-fluid" style="max-width: 200px;"></td>
                                             <td><?php echo $isi['nama_kategori']; ?></td>
                                             <td><?php echo $isi['nama_produk']; ?></td>
-                                            <td><?php echo $isi['harga']; ?></td>
+                                            <td><?php echo $isi['harga_jual']; ?></td>
                                             <td><?php echo $isi['status']; ?></td>
                                             <td>
                                                 <a class="btn btn-primary btn-sm" href="edit.php?id=<?php echo $isi['id_produk']; ?>" role="button">Edit</a>

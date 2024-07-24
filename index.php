@@ -13,6 +13,12 @@
 require 'koneksi/koneksi.php';
 include 'header.php';
 
+$sql_web = "SELECT * FROM identitas WHERE id = 1";
+$row_web = $koneksi->prepare($sql_web);
+$row_web->execute();
+
+$identitas_web = $row_web->fetch();
+
 ?>
 
 <!DOCTYPE html>
@@ -31,6 +37,16 @@ include 'header.php';
             max-height: 500px;
             height: auto;
             object-fit: cover;
+        }
+    </style>
+
+    <style>
+        .test-border {
+            border: 1px solid red;
+        }
+
+        .test-background {
+            background-color: yellow;
         }
     </style>
 </head>
@@ -205,15 +221,15 @@ include 'header.php';
                     <div class="row">
                         <div style="background-color: #eee;border: 2px solid #fff;" class="col-lg-6 info" data-aos="fade-up">
                             <h2><i class="fa fa-map-marker"></i> Alamat</h2>
-                            <p><?= $info_web->alamat; ?></p>
+                            <p><?= $identitas_web->alamat; ?></p>
                         </div>
                         <div style="background-color: #eee;border: 2px solid #fff;" class="col-lg-6 info" data-aos="fade-up" data-aos-delay="100">
                             <h2><i class="fa fa-whatsapp"></i> Kontak HP/WA</h2>
-                            <p><?= $info_web->hp; ?></p>
+                            <p><?= $identitas_web->hp; ?></p>
                         </div>
                         <div style="background-color: #eee;border: 2px solid #fff;" class="col-lg-6 info" data-aos="fade-up" data-aos-delay="200">
                             <h2><i class="fa fa-envelope"></i> Email</h2>
-                            <p><?= $info_web->email; ?></p>
+                            <p><?= $identitas_web->email; ?></p>
                         </div>
                         <div style="background-color: #eee;border: 2px solid #fff;" class="col-lg-6 info" data-aos="fade-up" data-aos-delay="300">
                             <h2><i class="fa fa-clock-o"></i> Jam Buka</h2>
@@ -222,11 +238,11 @@ include 'header.php';
                     </div>
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
-                    <?= $info_web->map; ?>
+                    <?= $identitas_web->map; ?>
                 </div>
             </div>
         </div>
-    </section><!-- End Contact Section -->
+    </section>
 
     <!-- Script JavaScript -->
     <!-- Link Script Swiper -->

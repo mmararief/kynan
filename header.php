@@ -3,11 +3,7 @@ session_start();
 require 'koneksi/koneksi.php';
 
 // Hitung jumlah item dalam keranjang
-$jumlah_item = 0;
-if (isset($_SESSION['keranjang'])) {
-    $jumlah_item = count($_SESSION['keranjang']);
-}
-
+$jumlah_keranjang = isset($_SESSION['keranjang']) ? count($_SESSION['keranjang']) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,7 +117,7 @@ if (isset($_SESSION['keranjang'])) {
                     <li><a onclick="window.location.href='./'" type="submit"><i class="fa fa-home faa-tada animated-hover"></i> Beranda</a></li>
                     <li><a type="submit" onclick="window.location.href='./#produk'"><i class="fa fa-bars faa-tada animated-hover"></i> Produk</a></li>
                     <li><a type="submit" onclick="window.location.href='./#kontak'"><i class="fa fa-phone-square faa-tada animated-hover"></i> Kontak</a></li>
-                    <li><a data-toggle="tooltip" data-placement="bottom" title="keranjang Belanja" type="submit" onclick="window.location.href='keranjang.php'"><i class='fa fa-opencart faa-tada animated-hover'></i> Keranjang <span style="padding: 5px;font-size: 8px;" class="badge badge-primary"> <?php echo $jumlah_item; ?></span></a></li>
+                    <li><a data-toggle="tooltip" data-placement="bottom" title="keranjang Belanja" type="submit" onclick="window.location.href='keranjang.php'"><i class='fa fa-opencart faa-tada animated-hover'></i> Keranjang <span style="padding: 5px;font-size: 8px;" class="badge badge-primary"> <?php echo $jumlah_keranjang; ?></span></a></li>
                 </ul>
             </nav><!-- .nav-menu -->
 

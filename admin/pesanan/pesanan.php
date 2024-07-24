@@ -24,12 +24,40 @@ $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
 // Get the total number of orders
-$total_sql = "SELECT COUNT(*) FROM konfirmasi";
+$total_sql = "SELECT COUNT(*) FROM transaksi";
 $total_result = $koneksi->query($total_sql);
 $total_items = $total_result->fetchColumn();
 
 // Calculate the total number of pages
 $total_pages = ceil($total_items / $items_per_page);
+
+
+$sql = "SELECT 
+    t.id_transaksi AS transaksi_id, 
+    t.tanggal,
+    t.via, 
+    t.nama, 
+    GROUP_CONCAT(p.nama_produk SEPARATOR ', ') AS nama_produk, 
+    t.whatsapp, 
+    t.alamat, 
+    t.metode_pembayaran,
+    t.status,
+    SUM(d.subtotal) AS total_belanja
+FROM 
+    transaksi t
+LEFT JOIN 
+    detailtransaksi d ON t.id_transaksi = d.id_transaksi
+LEFT JOIN 
+    produk p ON d.id_produk = p.id_produk
+GROUP BY 
+    t.id_transaksi
+ORDER BY 
+    t.id_transaksi DESC
+LIMIT 0, 10;
+";
+
+
+
 ?>
 
 <main id="main" class="main">
@@ -73,7 +101,6 @@ $total_pages = ceil($total_items / $items_per_page);
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sql = "SELECT * FROM konfirmasi ORDER BY id DESC LIMIT $offset, $items_per_page";
                                     $row = $koneksi->prepare($sql);
                                     $row->execute();
                                     $hasil = $row->fetchAll();
@@ -81,7 +108,7 @@ $total_pages = ceil($total_items / $items_per_page);
 
                                     foreach ($hasil as $isi) {
                                     ?>
-                                        <tr id="order-<?= $isi['id']; ?>">
+                                        <tr id="order-<?= $isi['transaksi_id']; ?>">
                                             <td><?php echo $no; ?></td>
                                             <td><?php echo $isi['tanggal']; ?></td>
                                             <td><?php echo $isi['via']; ?></td>
@@ -90,12 +117,12 @@ $total_pages = ceil($total_items / $items_per_page);
                                             <td><?php echo $isi['whatsapp']; ?></td>
                                             <td><?php echo $isi['alamat']; ?></td>
                                             <td><?php echo $isi['metode_pembayaran']; ?></td>
-                                            <td id="status-<?= $isi['id']; ?>"><?php echo $isi['status']; ?></td>
-                                            <td><?php echo number_format($isi['jumlah'], 0, ',', '.'); ?></td>
+                                            <td id="status-<?= $isi['transaksi_id']; ?>"><?php echo $isi['status']; ?></td>
+                                            <td><?php echo number_format($isi['total_belanja'], 0, ',', '.'); ?></td>
                                             <td>
                                                 <a class="btn btn-primary btn-sm" role="button" onclick="prosesPesanan('<?php echo $isi['whatsapp']; ?>')">Proses</a>
-                                                <a class="btn btn-danger btn-sm" role="button" onclick="hapusPesanan(<?php echo $isi['id']; ?>)">Hapus</a>
-                                                <a class="btn btn-success btn-sm" role="button" onclick="selesaiPesanan('<?php echo $isi['id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['jumlah']; ?>', '<?php echo $isi['whatsapp']; ?>')">Selesai</a>
+                                                <a class="btn btn-danger btn-sm" role="button" onclick="hapusPesanan(<?php echo $isi['transaksi_id']; ?>)">Hapus</a>
+                                                <a class="btn btn-success btn-sm" role="button" onclick="selesaiPesanan('<?php echo $isi['transaksi_id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['total_belanja']; ?>', '<?php echo $isi['whatsapp']; ?>')">Selesai</a>
                                             </td>
                                         </tr>
                                     <?php $no++;
@@ -136,8 +163,6 @@ $total_pages = ceil($total_items / $items_per_page);
 <?php include '../footer.php'; ?>
 
 <!-- SweetAlert -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

@@ -29,10 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tambah_ke_keranjang'])
             // Menghitung total belanja setelah update
             $total_belanja = 0;
             foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
-                $stmt = $koneksi->prepare('SELECT harga FROM produk WHERE id_produk = ?');
+                $stmt = $koneksi->prepare('SELECT harga_jual FROM produk WHERE id_produk = ?');
                 $stmt->execute([$id_produk]);
                 $produk = $stmt->fetch();
-                $total_belanja += $produk['harga'] * $jumlah;
+                $total_belanja += $produk['harga_jual'] * $jumlah;
             }
 
             // Keluarkan respons JSON

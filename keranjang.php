@@ -20,7 +20,7 @@ if (isset($_POST['update_keranjang'])) {
     $stmt = $koneksi->prepare('SELECT harga FROM produk WHERE id_produk = ?');
     $stmt->execute([$id_produk]);
     $produk = $stmt->fetch();
-    $total_belanja += $produk['harga'] * $jumlah;
+    $total_belanja += $produk['harga_jual'] * $jumlah;
   }
 
   echo json_encode(['total_belanja' => number_format($total_belanja, 0, ',', '.')]);
@@ -99,10 +99,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
                 $stmt->execute([$id_produk]);
                 $produk = $stmt->fetch();
 
-                $total_harga = $produk['harga'] * $jumlah;
+                $total_harga = $produk['harga_jual'] * $jumlah;
                 $total_belanja += $total_harga;
               ?>
-                <div class="row py-3 px-3 product" data-id="<?php echo $id_produk; ?>" data-harga="<?php echo $produk['harga']; ?>">
+                <div class="row py-3 px-3 product" data-id="<?php echo $id_produk; ?>" data-harga="<?php echo $produk['harga_jual']; ?>">
                   <div class="col-md-3">
                     <img class="img-thumbnail" width="170px" src="admin/assets/image/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>" />
                   </div>

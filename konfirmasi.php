@@ -78,7 +78,7 @@ $total_belanja = 0;
                                     $stmt->execute([$id_produk]);
                                     $produk = $stmt->fetch();
 
-                                    $total_harga = $produk['harga'] * $jumlah;
+                                    $total_harga = $produk['harga_jual'] * $jumlah;
                                     $total_belanja += $total_harga;
                                     $nama_produk_jumlah = $produk['nama_produk'] . ' x' . $jumlah;
                                 ?>

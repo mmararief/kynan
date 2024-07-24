@@ -184,9 +184,9 @@ if ($_GET['id'] == 'daftar') {
 
 
 
-if ($_GET['id'] == 'konfirmasi') {
-    session_start();  // Start the session to use session variables
 
+
+if ($_GET['id'] == 'konfirmasi') {
     $tanggal = date('Y-m-d H:i:s');
     $via = $_POST['via'];
     $nama = $_POST['nama'];
@@ -198,22 +198,37 @@ if ($_GET['id'] == 'konfirmasi') {
 
     $nama_produk_list = [];
     foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
-        $stmt = $koneksi->prepare('SELECT nama_produk FROM produk WHERE id_produk = ?');
+        $stmt = $koneksi->prepare('SELECT nama_produk, harga_jual FROM produk WHERE id_produk = ?');
         $stmt->execute([$id_produk]);
         $produk = $stmt->fetch();
-        $nama_produk_list[] = $produk['nama_produk'] . ' x' . $jumlah;
+        $nama_produk_list[] = [
+            'id_produk' => $id_produk,
+            'jumlah' => $jumlah,
+            'harga' => $produk['harga_jual'],
+            'subtotal' => $produk['harga_jual'] * $jumlah,
+            'nama_produk' => $produk['nama_produk']
+        ];
     }
-    $nama_produk = implode(', ', $nama_produk_list);
 
-    $stmt = $koneksi->prepare('INSERT INTO konfirmasi (tanggal, via, nama, nama_produk, whatsapp, alamat, metode_pembayaran, jumlah, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$tanggal, $via, $nama, $nama_produk, $whatsapp, $alamat, $metode_pembayaran, $total_belanja, $status]);
+    // Simpan data ke database
+    $stmt = $koneksi->prepare('INSERT INTO transaksi (tanggal, via, nama, whatsapp, alamat, metode_pembayaran, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$tanggal, $via, $nama, $whatsapp, $alamat, $metode_pembayaran, $total_belanja, $status]);
+    $id_transaksi = $koneksi->lastInsertId();
 
-    // Store order details in session for the confirmation page
+    // Simpan detail transaksi
+    foreach ($nama_produk_list as $item) {
+        $stmt = $koneksi->prepare('INSERT INTO detailtransaksi (id_transaksi, id_produk, jumlah, harga, subtotal) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([$id_transaksi, $item['id_produk'], $item['jumlah'], $item['harga'], $item['subtotal']]);
+    }
+
+    // Simpan detail pesanan ke dalam sesi
     $_SESSION['order_details'] = [
         'tanggal' => $tanggal,
         'via' => $via,
         'nama' => $nama,
-        'nama_produk' => $nama_produk,
+        'nama_produk' => implode(', ', array_map(function ($item) {
+            return $item['nama_produk'] . ' x' . $item['jumlah'];
+        }, $nama_produk_list)),
         'whatsapp' => $whatsapp,
         'alamat' => $alamat,
         'metode_pembayaran' => $metode_pembayaran,
@@ -221,21 +236,18 @@ if ($_GET['id'] == 'konfirmasi') {
         'status' => $status
     ];
 
-    // Hapus keranjang setelah konfirmasi
-    unset($_SESSION['keranjang']);
-
-    // Send POST request to API endpoint
+    // Kirim data ke API endpoint Node.js untuk mengirim pesan WhatsApp
     $url = 'http://localhost:8000/order-confirmation';
     $data = [
-        'via' => $via,
         'nama' => $nama,
-        'nama_produk' => $nama_produk,
         'whatsapp' => $whatsapp,
-        'alamat' => $alamat,
+        'nama_produk' => implode(', ', array_map(function ($item) {
+            return $item['nama_produk'] . ' x' . $item['jumlah'];
+        }, $nama_produk_list)),
+        'total' => $total_belanja,
         'metode_pembayaran' => $metode_pembayaran,
-        'jumlah' => $total_belanja,
-        'status' => $status
     ];
+
     $options = [
         'http' => [
             'header'  => "Content-type: application/json\r\n",
@@ -246,10 +258,14 @@ if ($_GET['id'] == 'konfirmasi') {
     $context  = stream_context_create($options);
     $result = file_get_contents($url, false, $context);
     if ($result === FALSE) {
-        // Handle error
+        echo 'Error sending data to API.';
     }
 
-    // Redirect to the confirmation page
+    // Hapus keranjang setelah konfirmasi
+    unset($_SESSION['keranjang']);
+
+    // Redirect ke halaman konfirmasi berhasil
     header('Location: ../konfirmasi_berhasil.php');
     exit();
 }
+?>
