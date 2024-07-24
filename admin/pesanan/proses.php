@@ -238,7 +238,7 @@ WHERE d.id_transaksi = ?";
                 if ($stmt_update) {
                     // Prepare detailed data for API request
                     $data = [
-                        'id' => $id,
+                        'id_transaksi' => $id,
                         'via' => $hasil_transaksi['via'],
                         'nama' => $hasil_transaksi['nama'],
                         'tanggal' => $hasil_transaksi['tanggal'],
