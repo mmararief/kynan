@@ -64,6 +64,7 @@ $total_pages = ceil($total_items / $items_per_page);
                                         <th>Nama Produk</th>
                                         <th>Harga</th>
                                         <th>Status</th>
+                                        <th>HPP</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -88,6 +89,7 @@ $total_pages = ceil($total_items / $items_per_page);
                                             <td><?php echo $isi['nama_produk']; ?></td>
                                             <td><?php echo $isi['harga_jual']; ?></td>
                                             <td><?php echo $isi['status']; ?></td>
+                                            <td><?php echo $isi['hpp']; ?></td>
                                             <td>
                                                 <a class="btn btn-primary btn-sm" href="edit.php?id=<?php echo $isi['id_produk']; ?>" role="button">Edit</a>
                                                 <a class="btn btn-danger btn-sm" href="#" role="button" onclick="hapusProduk(<?php echo $isi['id_produk']; ?>, '<?php echo $isi['gambar']; ?>')">Hapus</a>

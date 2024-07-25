@@ -75,8 +75,9 @@ if (empty($_SESSION['USER'])) {
 
                                         <div class="form-group row">
                                             <label class="col-sm-3">Harga</label>
-                                            <input type="text" class="form-control col-sm-9" name="harga" placeholder="Isi Harga">
+                                            <input type="text" class="form-control col-sm-9" name="harga_jual" placeholder="Isi Harga">
                                         </div>
+                                        
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group row">
@@ -88,6 +89,12 @@ if (empty($_SESSION['USER'])) {
                                             </select>
                                         </div>
 
+                                        <div class="form-group row">
+                                            <label class="col-sm-3">HPP</label>
+                                            <input type="text" class="form-control col-sm-9" name="hpp" placeholder="Isi HPP">
+                                        </div>
+
+                                        
                                         <div class="form-group row">
                                             <label class="col-sm-3">Gambar</label>
                                             <input type="file" accept="image/*" class="form-control col-sm-9" name="gambar" placeholder="Isi Gambar">

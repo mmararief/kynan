@@ -86,13 +86,11 @@ $hasil = $row->fetch();
 
                                         <div class="form-group row">
                                             <label class="col-sm-3">Harga</label>
-                                            <input type="text" class="form-control col-sm-9" value="<?= $hasil['harga']; ?>" name="harga" placeholder="Isi Harga">
+                                            <input type="text" class="form-control col-sm-9" value="<?= $hasil['harga_jual']; ?>" name="harga_jual" placeholder="Isi Harga">
                                         </div>
-
                                     </div>
 
                                     <div class="col-sm-6">
-
                                         <div class="form-group row">
                                             <label class="col-sm-3">Status</label>
                                             <select class="form-control col-sm-9" name="status">
@@ -109,8 +107,13 @@ $hasil = $row->fetch();
                                         <div class="form-group row">
                                             <label class="col-sm-3">Gambar</label>
                                             <input type="file" accept="image/*" class="form-control col-sm-9" name="gambar" placeholder="Isi Gambar">
-
                                         </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3">Hpp</label>
+                                            <input type="text" class="form-control col-sm-9" value="<?= $hasil['hpp']; ?>" name="hpp" placeholder="Isi Hpp">
+                                        </div>
+                                        
                                         <div class="form-group row">
                                             <label class="col-sm-3">Penampakan</label>
                                             <img src="../assets/image/<?php echo $hasil['gambar']; ?>" class="img-fluid" style="width:150px;">

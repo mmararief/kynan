@@ -115,12 +115,13 @@ if ($_GET['aksi'] == 'tambah') {
         if (move_uploaded_file($tmp_name, $target_path)) {
             $data[] = $_POST['nama_produk'];
             $data[] = $_POST['id_kategori'];
-            $data[] = $_POST['harga'];
+            $data[] = $_POST['harga_jual'];
+            $data[] = $_POST['hpp'];
             $data[] = $_POST['status'];
             $data[] = $newfilename;
 
-            $sql = "INSERT INTO `produk`(`nama_produk`, `id_kategori`, `harga`, `status`, `gambar`) 
-                VALUES (?,?,?,?,?)";
+            $sql = "INSERT INTO `produk`(`nama_produk`, `id_kategori`, `harga_jual`, `hpp`, `status`, `gambar`) 
+                VALUES (?,?,?,?,?,?)";
             $row = $koneksi->prepare($sql);
             $row->execute($data);
             echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
@@ -172,8 +173,11 @@ if ($_GET['aksi'] == 'edit') {
 
     $nama_produk = $_POST['nama_produk'];
     $id_kategori = $_POST['id_kategori'];
-    $harga = $_POST['harga'];
+    $harga_jual = $_POST['harga_jual'];
     $status = $_POST['status'];
+    $hpp = $_POST['hpp'];   
+
+
 
     // Check if a new image is uploaded
     if ($_FILES['gambar']["size"] > 0) {
@@ -291,10 +295,10 @@ if ($_GET['aksi'] == 'edit') {
     }
 
     // Update product details in the database
-    $sql = "UPDATE produk SET nama_produk = ?, id_kategori = ?, harga = ?, status = ?, gambar = ? 
+    $sql = "UPDATE produk SET nama_produk = ?, id_kategori = ?, harga_jual = ?, hpp = ?, status = ?, gambar = ? 
             WHERE id_produk = ?";
     $stmt = $koneksi->prepare($sql);
-    $stmt->execute([$nama_produk, $id_kategori, $harga, $status, $new_gambar_name, $id]);
+    $stmt->execute([$nama_produk, $id_kategori, $harga_jual, $hpp, $status, $new_gambar_name, $id]);
 
     // Success message after editing product
     echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';

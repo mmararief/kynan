@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 19 Bulan Mei 2024 pada 17.36
--- Versi server: 10.4.28-MariaDB
--- Versi PHP: 8.1.17
+-- Generation Time: Jul 24, 2024 at 06:41 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,48 +24,78 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `identitas`
+-- Table structure for table `detailtransaksi`
 --
 
-CREATE TABLE `identitas` (
-  `id` int(11) NOT NULL,
-  `logo` varchar(50) NOT NULL,
-  `title` varchar(50) NOT NULL,
-  `an` varchar(100) NOT NULL,
-  `bank` varchar(50) NOT NULL,
-  `rekening` varchar(30) NOT NULL,
-  `hp` varchar(13) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `pajak` varchar(50) NOT NULL,
-  `jasa` varchar(50) NOT NULL,
-  `alamat` varchar(150) NOT NULL,
-  `map` longtext NOT NULL,
-  `ig` varchar(50) NOT NULL,
-  `dev` varchar(100) NOT NULL,
-  `wa` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+CREATE TABLE `detailtransaksi` (
+  `id_detail` int(11) NOT NULL,
+  `id_transaksi` int(11) NOT NULL,
+  `id_produk` int(11) NOT NULL,
+  `jumlah` int(11) NOT NULL,
+  `harga` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `identitas`
+-- Dumping data for table `detailtransaksi`
 --
 
-INSERT INTO `identitas` (`id`, `logo`, `title`, `an`, `bank`, `rekening`, `hp`, `email`, `pajak`, `jasa`, `alamat`, `map`, `ig`, `dev`, `wa`) VALUES
-(1, 'logo kynan.png', 'Dapur Kynan', 'Dapur Kynan', 'Bank Mandiri', '1670001843779', '081233245579', 'kynan@gmail.com', '', '', 'Jl. Pakis 8C No. 3 Blok BB11, RT.006/RW.012, Pekayon Jaya, Kec. Bekasi Selatan, Kota Bekasi, Jawa Barat 17148', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6124.59535975474!2d106.9613255!3d-6.2622594!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698d73d186319d%3A0x7a781b706b80dd5c!2sDapur%20Kynan!5e1!3m2!1sid!2sid!4v1714234090452!5m2!1sid!2sid\" width=\"100%\" height=\"430\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>', 'https://www.instagram.com/dapur.kynan/', 'Dapur Kynan', 'https://api.whatsapp.com/send?phone=6281233245579');
+INSERT INTO `detailtransaksi` (`id_detail`, `id_transaksi`, `id_produk`, `jumlah`, `harga`, `subtotal`) VALUES
+(12, 8, 27, 1, 50000.00, 50000.00),
+(28, 17, 26, 2, 20000.00, 40000.00),
+(29, 17, 5, 3, 100000.00, 300000.00),
+(30, 18, 25, 1, 5000.00, 5000.00),
+(31, 19, 26, 1, 20000.00, 20000.00),
+(32, 19, 24, 1, 1000.00, 1000.00),
+(33, 19, 23, 1, 5000.00, 5000.00),
+(34, 19, 15, 1, 5000.00, 5000.00),
+(35, 19, 4, 1, 5000.00, 5000.00);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kategori`
+-- Table structure for table `identitas`
+--
+
+CREATE TABLE `identitas` (
+  `id` int(11) NOT NULL,
+  `logo` varchar(191) NOT NULL,
+  `title` varchar(191) NOT NULL,
+  `an` varchar(191) NOT NULL,
+  `bank` varchar(191) NOT NULL,
+  `rekening` varchar(191) NOT NULL,
+  `hp` varchar(191) NOT NULL,
+  `email` varchar(191) NOT NULL,
+  `pajak` varchar(191) NOT NULL,
+  `jasa` varchar(191) NOT NULL,
+  `alamat` varchar(191) NOT NULL,
+  `map` varchar(191) NOT NULL,
+  `ig` varchar(191) NOT NULL,
+  `dev` varchar(191) NOT NULL,
+  `wa` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `identitas`
+--
+
+INSERT INTO `identitas` (`id`, `logo`, `title`, `an`, `bank`, `rekening`, `hp`, `email`, `pajak`, `jasa`, `alamat`, `map`, `ig`, `dev`, `wa`) VALUES
+(1, 'logo kynan.png', 'Dapur Kynan', 'Dapur Kynan', 'Bank Mandiri', '1670001843779', '081233245579', 'kynan@gmail.com', '', '', 'Jl. Pakis 8C No. 3 Blok BB11, RT.006/RW.012, Pekayon Jaya, Kec. Bekasi Selatan, Kota Bekasi, Jawa Barat 17148', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6124.59535975474!2d106.9613255!3d-6.2622594!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698d73d186319d%3A0x7a781b706b80dd5c!2sDapur', 'https://www.instagram.com/dapur.kynan/', 'Dapur Kynan', 'https://api.whatsapp.com/send?phone=6281233245579');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kategori`
 --
 
 CREATE TABLE `kategori` (
   `id_kategori` int(11) NOT NULL,
-  `nama_kategori` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `tgl_input` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `nama_kategori` varchar(191) NOT NULL,
+  `tgl_input` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `kategori`
+-- Dumping data for table `kategori`
 --
 
 INSERT INTO `kategori` (`id_kategori`, `nama_kategori`, `tgl_input`) VALUES
@@ -78,51 +108,18 @@ INSERT INTO `kategori` (`id_kategori`, `nama_kategori`, `tgl_input`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `konfirmasi`
---
-
-CREATE TABLE `konfirmasi` (
-  `id` int(11) NOT NULL,
-  `tanggal` datetime NOT NULL,
-  `via` varchar(255) NOT NULL,
-  `nama` varchar(255) NOT NULL,
-  `nama_produk` text NOT NULL,
-  `whatsapp` varchar(15) NOT NULL,
-  `alamat` varchar(255) DEFAULT NULL,
-  `metode_pembayaran` varchar(255) NOT NULL,
-  `jumlah` int(11) NOT NULL,
-  `status` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data untuk tabel `konfirmasi`
---
-
-INSERT INTO `konfirmasi` (`id`, `tanggal`, `via`, `nama`, `nama_produk`, `whatsapp`, `alamat`, `metode_pembayaran`, `jumlah`, `status`) VALUES
-(1, '2024-05-17 12:39:46', 'Online', 'fiqih alamsyah', 'mac n cheese, mac n cheese, Arem arem mie', '081286820815', 'setiadarma', 'BCA - 3431108079 - Arie Sutrisno', 70000, 'Selesai'),
-(2, '2024-05-17 12:42:36', 'Online', 'fiqih alamsyah', 'Sosis solo, Sosis solo', '081286820815', 'Gunadarma', 'QR Dana', 10000, 'Selesai'),
-(9, '2024-05-19 00:00:00', 'Offline', 'fiqih alamsyah', 'kue kering', '6281213417445', '', 'Cash', 45000, 'Selesai'),
-(10, '2024-05-19 00:00:00', 'Offline', 'Aini', 'Kue Kering', '6285718705615', '', 'Hutang', 50000, 'Selesai'),
-(11, '2024-05-17 00:00:00', 'Offline', 'Aini', 'peyek kacang dan rebon', '6285718705615', '', 'Cash', 100000, 'Selesai'),
-(12, '2024-05-19 13:21:38', 'Online', 'fiqih alamsyah', 'peyek kacang dan rebon', '081286820815', '', 'QR Dana', 5000, 'Selesai'),
-(13, '2024-05-19 13:23:39', 'Online', 'fiqih alamsyah', 'kunyit asemm', '081286820815', '', 'BCA - 3431108079 - Arie Sutrisno', 50000, 'Selesai'),
-(14, '2024-05-19 13:30:32', 'Online', 'fiqih alamsyah', 'sambal cumi baby, sambal cumi baby, sambal cumi baby', '6281286820815', 'setiadarma', 'Mandiri - 1670001843779 - Arie Sutrisno', 180000, 'Selesai');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `landingpage`
+-- Table structure for table `landingpage`
 --
 
 CREATE TABLE `landingpage` (
   `id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `subtitle` varchar(255) NOT NULL,
-  `prom` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `title` varchar(191) NOT NULL,
+  `subtitle` varchar(191) NOT NULL,
+  `prom` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `landingpage`
+-- Dumping data for table `landingpage`
 --
 
 INSERT INTO `landingpage` (`id`, `title`, `subtitle`, `prom`) VALUES
@@ -131,19 +128,19 @@ INSERT INTO `landingpage` (`id`, `title`, `subtitle`, `prom`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `login`
+-- Table structure for table `login`
 --
 
 CREATE TABLE `login` (
   `id_login` int(11) NOT NULL,
-  `nama_pengguna` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `level` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `nama_pengguna` varchar(191) NOT NULL,
+  `username` varchar(191) NOT NULL,
+  `password` varchar(191) NOT NULL,
+  `level` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `login`
+-- Dumping data for table `login`
 --
 
 INSERT INTO `login` (`id_login`, `nama_pengguna`, `username`, `password`, `level`) VALUES
@@ -152,120 +149,63 @@ INSERT INTO `login` (`id_login`, `nama_pengguna`, `username`, `password`, `level
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pemasukan`
---
-
-CREATE TABLE `pemasukan` (
-  `id_pemasukan` int(11) NOT NULL,
-  `tanggal` date DEFAULT NULL,
-  `keterangan` varchar(255) DEFAULT NULL,
-  `sumber` varchar(255) DEFAULT NULL,
-  `jumlah` int(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `pemasukan`
---
-
-INSERT INTO `pemasukan` (`id_pemasukan`, `tanggal`, `keterangan`, `sumber`, `jumlah`) VALUES
-(4, '2024-05-14', 'Tip', 'TIP', 50000),
-(5, '2024-05-13', 'Transfer Modal', 'ATM', 500000),
-(6, '2024-05-15', 'Pembelian Produk', 'Penjualan', 50000),
-(9, '2024-05-16', 'Penjualan', 'ATM', 50000),
-(10, '2024-05-19', 'Kue Kering', 'Penjualan', 50000),
-(12, '2024-05-19', 'kunyit asemm', 'Penjualan', 50000),
-(13, '2024-05-19', 'peyek kacang dan rebon', 'Penjualan', 5000),
-(14, '2024-05-17', 'peyek kacang dan rebon', 'Penjualan', 100000),
-(15, '2024-05-19', 'Kue Kering', 'Penjualan', 50000),
-(16, '2024-05-19', 'kue kering', 'Penjualan', 45000),
-(17, '2024-05-17', 'Sosis solo, Sosis solo', 'Penjualan', 10000),
-(18, '2024-05-17', 'mac n cheese, mac n cheese, Arem arem mie', 'Penjualan', 70000),
-(19, '2024-05-19', 'sambal cumi baby, sambal cumi baby, sambal cumi baby', 'Penjualan', 180000);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `pengeluaran`
---
-
-CREATE TABLE `pengeluaran` (
-  `id_pengeluaran` int(11) NOT NULL,
-  `tanggal` date DEFAULT NULL,
-  `keterangan` varchar(255) DEFAULT NULL,
-  `sumber` varchar(255) DEFAULT NULL,
-  `jumlah` int(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `pengeluaran`
---
-
-INSERT INTO `pengeluaran` (`id_pengeluaran`, `tanggal`, `keterangan`, `sumber`, `jumlah`) VALUES
-(5, '2024-05-11', 'belanja', 'Lain-Lain', 5000),
-(8, '2024-05-10', 'Beli batu es', 'Keperluan Pribadi', 10000),
-(9, '2024-05-13', 'Beli Kopi', 'Keperluan Pribadi', 7000),
-(11, '2024-05-11', 'tambal ban', 'Kendaraan', 20000),
-(12, '2024-05-16', 'Belanja Bahan', 'Organisasi', 400000);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `produk`
+-- Table structure for table `produk`
 --
 
 CREATE TABLE `produk` (
   `id_produk` int(11) NOT NULL,
   `id_kategori` int(11) NOT NULL,
-  `nama_produk` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `harga` int(255) NOT NULL,
-  `status` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `gambar` text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `nama_produk` varchar(191) NOT NULL,
+  `status` varchar(191) NOT NULL,
+  `gambar` varchar(191) NOT NULL,
+  `harga_jual` decimal(10,2) NOT NULL,
+  `hpp` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `produk`
+-- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`id_produk`, `id_kategori`, `nama_produk`, `harga`, `status`, `gambar`) VALUES
-(1, 1, 'Bolu Pelangi', 50000, 'PO', '1715091332.png'),
-(2, 1, 'Marmer Cake', 10000, 'Tidak PO', '1715091561.png'),
-(3, 1, 'CurryPuff Isi 10', 45000, 'PO', '1715090407.png'),
-(4, 1, 'Curry Puff', 5000, 'PO', '1715090462.png'),
-(5, 1, 'Vanilla cream puff', 100000, 'Tidak PO', '1715090496.png'),
-(6, 1, 'Roti sisir', 10000, 'Tidak PO', '1715090541.png'),
-(7, 1, 'Roti goreng isi daging', 30000, 'PO', '1715090565.png'),
-(8, 1, 'Roti goreng kacang hijau', 15000, 'Tidak PO', '1715784533.png'),
-(13, 8, 'Bongko pisang', 30000, 'PO', '1715858480.png'),
-(14, 8, 'Bubur sumsum', 3000, 'Tidak PO', '1715858521.png'),
-(15, 8, 'Lapis Pelangi', 5000, 'Tidak PO', '1715858538.png'),
-(16, 8, 'Pukis', 4000, 'Tidak PO', '1715858605.png'),
-(17, 8, 'Ketan serundeng', 6000, 'Tidak PO', '1715858649.png'),
-(19, 8, 'Arem arem mie', 30000, 'Tidak PO', '1715858782.png'),
-(20, 8, 'Risol mlepuh', 2000, 'PO', '1715858820.png'),
-(21, 8, 'Pastel bihun', 3000, 'PO', '1715858843.png'),
-(22, 8, 'Lumpia Semarang', 10000, 'Tidak PO', '1715858878.png'),
-(23, 8, 'Sosis solo', 5000, 'Tidak PO', '1715858921.png'),
-(24, 8, 'Sempol ayam', 1000, 'Tidak PO', '1715858939.png'),
-(25, 8, 'peyek kacang dan rebon', 5000, 'Tidak PO', '1715858954.png'),
-(26, 8, 'mac n cheese', 20000, 'PO', '1715858970.png'),
-(27, 9, 'kunyit asemm', 50000, 'PO', '1715858990.png'),
-(28, 10, 'sambal cumi baby', 60000, 'PO', '1715859009.png');
+INSERT INTO `produk` (`id_produk`, `id_kategori`, `nama_produk`, `status`, `gambar`, `harga_jual`, `hpp`) VALUES
+(1, 1, 'Bolu Pelangi', 'PO', '1715091332.png', 50000.00, 40000.00),
+(2, 1, 'Marmer Cake', 'Tidak PO', '1715091561.png', 10000.00, 8000.00),
+(3, 1, 'CurryPuff Isi 10', 'PO', '1715090407.png', 45000.00, 36000.00),
+(4, 1, 'Curry Puff', 'PO', '1715090462.png', 5000.00, 4000.00),
+(5, 1, 'Vanilla cream puff', 'Tidak PO', '1715090496.png', 100000.00, 80000.00),
+(6, 1, 'Roti sisir', 'Tidak PO', '1715090541.png', 10000.00, 8000.00),
+(7, 1, 'Roti goreng isi daging', 'PO', '1715090565.png', 30000.00, 24000.00),
+(8, 1, 'Roti goreng kacang hijau', 'Tidak PO', '1715784533.png', 15000.00, 12000.00),
+(13, 8, 'Bongko pisang', 'PO', '1715858480.png', 30000.00, 24000.00),
+(14, 8, 'Bubur sumsum', 'Tidak PO', '1715858521.png', 3000.00, 2400.00),
+(15, 8, 'Lapis Pelangi', 'Tidak PO', '1715858538.png', 5000.00, 4000.00),
+(16, 8, 'Pukis', 'Tidak PO', '1715858605.png', 4000.00, 3200.00),
+(17, 8, 'Ketan serundeng', 'Tidak PO', '1715858649.png', 6000.00, 4800.00),
+(19, 8, 'Arem arem mie', 'Tidak PO', '1715858782.png', 30000.00, 24000.00),
+(20, 8, 'Risol mlepuh', 'PO', '1715858820.png', 2000.00, 1600.00),
+(21, 8, 'Pastel bihun', 'PO', '1715858843.png', 3000.00, 2400.00),
+(22, 8, 'Lumpia Semarang', 'Tidak PO', '1715858878.png', 10000.00, 8000.00),
+(23, 8, 'Sosis solo', 'Tidak PO', '1715858921.png', 5000.00, 4000.00),
+(24, 8, 'Sempol ayam', 'Tidak PO', '1715858939.png', 1000.00, 800.00),
+(25, 8, 'peyek kacang dan rebon', 'Tidak PO', '1715858954.png', 5000.00, 4000.00),
+(26, 8, 'mac n cheese', 'PO', '1715858970.png', 20000.00, 16000.00),
+(27, 9, 'kunyit asemm', 'PO', '1715858990.png', 50000.00, 40000.00),
+(28, 10, 'sambal cumi baby', 'PO', '1715859009.png', 60000.00, 48000.00);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `rekening`
+-- Table structure for table `rekening`
 --
 
 CREATE TABLE `rekening` (
   `id` int(11) NOT NULL,
-  `nama_bank` varchar(100) NOT NULL,
-  `no_rekening` varchar(50) NOT NULL,
-  `nama_pemilik` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `nama_bank` varchar(191) NOT NULL,
+  `no_rekening` varchar(191) NOT NULL,
+  `nama_pemilik` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `rekening`
+-- Dumping data for table `rekening`
 --
 
 INSERT INTO `rekening` (`id`, `nama_bank`, `no_rekening`, `nama_pemilik`) VALUES
@@ -273,132 +213,190 @@ INSERT INTO `rekening` (`id`, `nama_bank`, `no_rekening`, `nama_pemilik`) VALUES
 (2, 'Mandiri', '1670001843779', 'Arie Sutrisno'),
 (3, 'BSI', '7124518258', 'Arie Sutrisno');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaksi`
+--
+
+CREATE TABLE `transaksi` (
+  `id_transaksi` int(11) NOT NULL,
+  `tanggal` datetime(3) NOT NULL,
+  `via` varchar(191) NOT NULL,
+  `nama` varchar(191) NOT NULL,
+  `whatsapp` varchar(191) NOT NULL,
+  `alamat` varchar(191) DEFAULT NULL,
+  `metode_pembayaran` varchar(191) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `status` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `transaksi`
+--
+
+INSERT INTO `transaksi` (`id_transaksi`, `tanggal`, `via`, `nama`, `whatsapp`, `alamat`, `metode_pembayaran`, `total`, `status`) VALUES
+(8, '2024-07-22 20:48:05.000', 'Online', 'ammar', '628872588744', 'asdasd', 'BCA - 3431108079 - Arie Sutrisno', 50000.00, 'Selesai'),
+(17, '2024-06-12 00:00:00.000', 'online', 'Sukirman', '628872588744', 'Prima', 'BCA', 340000.00, 'Selesai'),
+(18, '2024-07-23 18:56:36.000', 'Online', 'adila', '6285711778593', 'Duta', 'Mandiri - 1670001843779 - Arie Sutrisno', 5000.00, 'Selesai'),
+(19, '2024-07-23 19:03:44.000', 'Online', 'Slamet', '6285711778593', 'Jakarta selatan', 'BCA - 3431108079 - Arie Sutrisno', 36000.00, 'Selesai');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `_prisma_migrations`
+--
+
+CREATE TABLE `_prisma_migrations` (
+  `id` varchar(36) NOT NULL,
+  `checksum` varchar(64) NOT NULL,
+  `finished_at` datetime(3) DEFAULT NULL,
+  `migration_name` varchar(255) NOT NULL,
+  `logs` text DEFAULT NULL,
+  `rolled_back_at` datetime(3) DEFAULT NULL,
+  `started_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  `applied_steps_count` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `_prisma_migrations`
+--
+
+INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
+('27926202-2b88-4d51-aad6-dd4044bec41e', '0862e3a76501d54d181e0fa529bb39dc7a4e509026d588571f5d987da040948a', '2024-07-23 08:12:43.537', '20240715101215_init', NULL, NULL, '2024-07-23 08:12:43.523', 1),
+('3e162427-92bb-42a8-af98-fd033d54347c', '9af3acfc0f7507868be25b292619724e2a71384f4b8c67ae9e9b5cc203bd3910', '2024-07-23 08:12:43.708', '20240722175901_init', NULL, NULL, '2024-07-23 08:12:43.637', 1),
+('7928c3dd-676c-4d12-a128-5b48c9febba7', 'a775f6eb0252e58a24bf81bf84c1fcfa173a11e797f45a624c7ed22019e59afb', '2024-07-23 08:12:44.203', '20240723081244_make_hpp_nullable', NULL, NULL, '2024-07-23 08:12:44.173', 1),
+('df2f40ac-986e-4dea-8b16-18317fa6f620', '1d950cda033f1ffec91c2657f7a2286d3b79785976cd371f90035c2785a5888e', '2024-07-23 08:12:43.635', '20240715103426_baru', NULL, NULL, '2024-07-23 08:12:43.538', 1);
+
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `identitas`
+-- Indexes for table `detailtransaksi`
+--
+ALTER TABLE `detailtransaksi`
+  ADD PRIMARY KEY (`id_detail`),
+  ADD KEY `DetailTransaksi_id_transaksi_fkey` (`id_transaksi`),
+  ADD KEY `DetailTransaksi_id_produk_fkey` (`id_produk`);
+
+--
+-- Indexes for table `identitas`
 --
 ALTER TABLE `identitas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `kategori`
+-- Indexes for table `kategori`
 --
 ALTER TABLE `kategori`
   ADD PRIMARY KEY (`id_kategori`);
 
 --
--- Indeks untuk tabel `konfirmasi`
---
-ALTER TABLE `konfirmasi`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indeks untuk tabel `landingpage`
+-- Indexes for table `landingpage`
 --
 ALTER TABLE `landingpage`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `login`
+-- Indexes for table `login`
 --
 ALTER TABLE `login`
   ADD PRIMARY KEY (`id_login`);
 
 --
--- Indeks untuk tabel `pemasukan`
---
-ALTER TABLE `pemasukan`
-  ADD PRIMARY KEY (`id_pemasukan`);
-
---
--- Indeks untuk tabel `pengeluaran`
---
-ALTER TABLE `pengeluaran`
-  ADD PRIMARY KEY (`id_pengeluaran`);
-
---
--- Indeks untuk tabel `produk`
+-- Indexes for table `produk`
 --
 ALTER TABLE `produk`
   ADD PRIMARY KEY (`id_produk`),
-  ADD KEY `id_kategori` (`id_kategori`);
+  ADD KEY `Produk_id_kategori_fkey` (`id_kategori`);
 
 --
--- Indeks untuk tabel `rekening`
+-- Indexes for table `rekening`
 --
 ALTER TABLE `rekening`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- Indexes for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  ADD PRIMARY KEY (`id_transaksi`);
+
+--
+-- Indexes for table `_prisma_migrations`
+--
+ALTER TABLE `_prisma_migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `identitas`
+-- AUTO_INCREMENT for table `detailtransaksi`
+--
+ALTER TABLE `detailtransaksi`
+  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+
+--
+-- AUTO_INCREMENT for table `identitas`
 --
 ALTER TABLE `identitas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `kategori`
+-- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
   MODIFY `id_kategori` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT untuk tabel `konfirmasi`
---
-ALTER TABLE `konfirmasi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT untuk tabel `landingpage`
+-- AUTO_INCREMENT for table `landingpage`
 --
 ALTER TABLE `landingpage`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `login`
+-- AUTO_INCREMENT for table `login`
 --
 ALTER TABLE `login`
-  MODIFY `id_login` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_login` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `pemasukan`
---
-ALTER TABLE `pemasukan`
-  MODIFY `id_pemasukan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
--- AUTO_INCREMENT untuk tabel `pengeluaran`
---
-ALTER TABLE `pengeluaran`
-  MODIFY `id_pengeluaran` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT untuk tabel `produk`
+-- AUTO_INCREMENT for table `produk`
 --
 ALTER TABLE `produk`
-  MODIFY `id_produk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id_produk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
--- AUTO_INCREMENT untuk tabel `rekening`
+-- AUTO_INCREMENT for table `rekening`
 --
 ALTER TABLE `rekening`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- AUTO_INCREMENT for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `produk`
+-- Constraints for table `detailtransaksi`
+--
+ALTER TABLE `detailtransaksi`
+  ADD CONSTRAINT `DetailTransaksi_id_produk_fkey` FOREIGN KEY (`id_produk`) REFERENCES `produk` (`id_produk`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `DetailTransaksi_id_transaksi_fkey` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `produk`
 --
 ALTER TABLE `produk`
-  ADD CONSTRAINT `produk_ibfk_1` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`) ON DELETE CASCADE;
+  ADD CONSTRAINT `Produk_id_kategori_fkey` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
