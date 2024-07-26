@@ -196,32 +196,38 @@ if ($_GET['id'] == 'konfirmasi') {
     $total_belanja = $_POST['total_belanja'];
     $status = $_POST['status'];
 
+    // Fetch products in the cart
     $nama_produk_list = [];
     foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
-        $stmt = $koneksi->prepare('SELECT nama_produk, harga_jual FROM produk WHERE id_produk = ?');
+        $stmt = $koneksi->prepare('SELECT id_produk, id_kategori, nama_produk, status, gambar, harga_jual, hpp FROM produk WHERE id_produk = ?');
         $stmt->execute([$id_produk]);
         $produk = $stmt->fetch();
         $nama_produk_list[] = [
-            'id_produk' => $id_produk,
+            'id_produk' => $produk['id_produk'],
+            'id_kategori' => $produk['id_kategori'],
+            'nama_produk' => $produk['nama_produk'],
+            'status' => $produk['status'],
+            'gambar' => $produk['gambar'],
+            'harga_jual' => $produk['harga_jual'],
+            'hpp' => $produk['hpp'],
             'jumlah' => $jumlah,
             'harga' => $produk['harga_jual'],
             'subtotal' => $produk['harga_jual'] * $jumlah,
-            'nama_produk' => $produk['nama_produk']
         ];
     }
 
-    // Simpan data ke database
+    // Save transaction to database
     $stmt = $koneksi->prepare('INSERT INTO transaksi (tanggal, via, nama, whatsapp, alamat, metode_pembayaran, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([$tanggal, $via, $nama, $whatsapp, $alamat, $metode_pembayaran, $total_belanja, $status]);
     $id_transaksi = $koneksi->lastInsertId();
 
-    // Simpan detail transaksi
+    // Save transaction details to database
     foreach ($nama_produk_list as $item) {
         $stmt = $koneksi->prepare('INSERT INTO detailtransaksi (id_transaksi, id_produk, jumlah, harga, subtotal) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([$id_transaksi, $item['id_produk'], $item['jumlah'], $item['harga'], $item['subtotal']]);
     }
 
-    // Simpan detail pesanan ke dalam sesi
+    // Save order details in session
     $_SESSION['order_details'] = [
         'tanggal' => $tanggal,
         'via' => $via,
@@ -236,36 +242,59 @@ if ($_GET['id'] == 'konfirmasi') {
         'status' => $status
     ];
 
-    // Kirim data ke API endpoint Node.js untuk mengirim pesan WhatsApp
-    $url = 'http://localhost:8000/order-confirmation';
-    $data = [
+    // Prepare data to send to Node.js webhook
+    $webhookData = [
+        'id_transaksi' => $id_transaksi,
+        'tanggal' => $tanggal,
+        'via' => $via,
         'nama' => $nama,
         'whatsapp' => $whatsapp,
-        'nama_produk' => implode(', ', array_map(function ($item) {
-            return $item['nama_produk'] . ' x' . $item['jumlah'];
-        }, $nama_produk_list)),
-        'total' => $total_belanja,
+        'alamat' => $alamat,
         'metode_pembayaran' => $metode_pembayaran,
+        'total' => $total_belanja,
+        'status' => $status,
+        'detailtransaksi' => array_map(function ($item) {
+            return [
+                'id_detail' => $item['id_produk'], // Assuming id_detail is the same as id_produk
+                'id_transaksi' => $item['id_produk'], // Assuming id_transaksi is the same as id_produk
+                'id_produk' => $item['id_produk'],
+                'jumlah' => $item['jumlah'],
+                'harga' => $item['harga'],
+                'subtotal' => $item['subtotal'],
+                'produk' => [
+                    'id_produk' => $item['id_produk'],
+                    'id_kategori' => $item['id_kategori'],
+                    'nama_produk' => $item['nama_produk'],
+                    'status' => $item['status'],
+                    'gambar' => $item['gambar'],
+                    'harga_jual' => $item['harga_jual'],
+                    'hpp' => $item['hpp']
+                ]
+            ];
+        }, $nama_produk_list)
     ];
 
-    $options = [
+    // Send data to Node.js webhook
+    $webhookUrl = 'http://localhost:8000/webhook';
+    $webhookOptions = [
         'http' => [
-            'header'  => "Content-type: application/json\r\n",
-            'method'  => 'POST',
-            'content' => json_encode($data),
+            'header' => "Content-type: application/json\r\n",
+            'method' => 'POST',
+            'content' => json_encode($webhookData),
         ],
     ];
-    $context  = stream_context_create($options);
-    $result = file_get_contents($url, false, $context);
-    if ($result === FALSE) {
-        echo 'Error sending data to API.';
+    $webhookContext = stream_context_create($webhookOptions);
+    $webhookResult = file_get_contents($webhookUrl, false, $webhookContext);
+    if ($webhookResult === FALSE) {
+        echo 'Error sending data to webhook.';
     }
 
-    // Hapus keranjang setelah konfirmasi
+    // Clear cart after confirmation
     unset($_SESSION['keranjang']);
 
-    // Redirect ke halaman konfirmasi berhasil
+    // Redirect to confirmation success page
     header('Location: ../konfirmasi_berhasil.php');
     exit();
 }
+
 ?>
