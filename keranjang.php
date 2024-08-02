@@ -4,7 +4,7 @@ require 'koneksi/koneksi.php';
 include 'header.php';
 
 // Handle AJAX cart update
-if (isset($_POST['update_keranjang'])) {
+if (isset($_POST['tambah_ke_keranjang'])) {
   $id_produk = $_POST['id_produk'];
   $jumlah = $_POST['jumlah'];
 
@@ -17,7 +17,7 @@ if (isset($_POST['update_keranjang'])) {
   // Calculate total cost
   $total_belanja = 0;
   foreach ($_SESSION['keranjang'] as $id_produk => $jumlah) {
-    $stmt = $koneksi->prepare('SELECT harga FROM produk WHERE id_produk = ?');
+    $stmt = $koneksi->prepare('SELECT harga_jual FROM produk WHERE id_produk = ?');
     $stmt->execute([$id_produk]);
     $produk = $stmt->fetch();
     $total_belanja += $produk['harga_jual'] * $jumlah;
@@ -107,7 +107,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
                     <img class="img-thumbnail" width="170px" src="admin/assets/image/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>" />
                   </div>
                   <div class="col-md-9 d-flex align-items-center">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center w-100 justify-content-between">
                       <div class="d-flex align-items-center">
                         <h5 class="text-darkblue"><?php echo $produk['nama_produk']; ?></h5>
                         <button class="btn btn-danger btn-sm mx-2 delete-product" data-id="<?php echo $id_produk; ?>">
@@ -175,9 +175,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
           if (xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
             console.log(response); // Check the response
+          } else {
+            console.error('Error:', xhr.statusText);
           }
         };
-        xhr.send('update_keranjang=1&id_produk=' + id_produk + '&jumlah=' + jumlah);
+        xhr.onerror = function() {
+          console.error('Request failed');
+        };
+        xhr.send('tambah_ke_keranjang=1&id_produk=' + id_produk + '&jumlah=' + jumlah);
       });
     });
 

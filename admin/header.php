@@ -198,28 +198,12 @@ $hasil_login = $row->fetch();
             </li><!-- End Blank Page Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#catatan-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-pc-display"></i><span>Pencatatan Keuangan</span><i class="bi bi-chevron-down ms-auto"></i>
+                <a class="nav-link collapsed" href="http://localhost:3000/">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Pencatatan Keuangan </span>
                 </a>
-                <ul id="catatan-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="<?php echo $url; ?>admin/pemasukan/pemasukan.php">
-                            <i class="bi bi-circle"></i><span>Pemasukan</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $url; ?>admin/pengeluaran/pengeluaran.php">
-                            <i class="bi bi-circle"></i><span>Pengeluaran</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $url; ?>admin/laporan/laporan.php">
-                            <i class="bi bi-circle"></i><span>Laporan</span>
-                        </a>
-                    </li>
-                </ul>
             </li><!-- End Blank Page Nav -->
-
+            </a>
             <br>
             <br>
             <br>

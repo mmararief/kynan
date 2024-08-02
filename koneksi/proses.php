@@ -229,6 +229,7 @@ if ($_GET['id'] == 'konfirmasi') {
 
     // Save order details in session
     $_SESSION['order_details'] = [
+        'id_transaksi' => $id_transaksi,
         'tanggal' => $tanggal,
         'via' => $via,
         'nama' => $nama,
@@ -275,7 +276,7 @@ if ($_GET['id'] == 'konfirmasi') {
     ];
 
     // Send data to Node.js webhook
-    $webhookUrl = 'http://localhost:8000/webhook';
+    $webhookUrl = 'http://localhost:8000/order-confirmation';
     $webhookOptions = [
         'http' => [
             'header' => "Content-type: application/json\r\n",

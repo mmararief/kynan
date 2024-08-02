@@ -12,8 +12,10 @@
  */
 require 'koneksi/koneksi.php';
 session_start();
-if (empty($_SESSION['USER'])) {
-    session_start();
+session_start();
+if (!empty($_SESSION['USER']['level'] == 'admin')) {
+    header('Location: /kynan/admin/index.php');
+    exit();
 }
 include 'header.php';
 ?>

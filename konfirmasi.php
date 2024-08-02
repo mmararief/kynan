@@ -130,7 +130,7 @@ $total_belanja = 0;
                                 </div>
                                 <input type="hidden" name="total_belanja" value="<?php echo $total_belanja; ?>">
                                 <div class="form-group">
-                                    <input type="hidden" class="form-control" id="status" name="status" value="Proses">
+                                    <input type="hidden" class="form-control" id="status" name="status" value="Menunggu Pembayaran">
                                 </div>
                                 <div id="qr-dana">
                                     <p>Silakan scan kode QR berikut untuk pembayaran melalui Dana:</p>

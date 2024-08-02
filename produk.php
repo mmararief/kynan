@@ -3,6 +3,7 @@ session_start();
 require 'koneksi/koneksi.php';
 include 'header.php';
 
+
 // Handle search query based on category
 $categories = $koneksi->query('SELECT * FROM kategori')->fetchAll();
 
@@ -57,7 +58,7 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
     <title>Daftar Produk</title>
@@ -65,54 +66,22 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
         .card {
-            height: 400px;
-            position: relative;
+            border: none;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
         }
 
         .card img {
-            object-fit: cover;
             height: 200px;
-        }
-
-        .btn-container {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-        }
-
-        .btn-outline-primary {
-            font-size: 20px;
-        }
-
-        .form-control,
-        .btn {
-            font-size: 20px;
-        }
-
-        .form-control.rounded {
-            font-size: 20px;
-        }
-
-        .custom-select {
-            font-size: 20px;
-        }
-
-        .list-group-item.bg-outline-secondary {
-            font-size: 15px;
-        }
-
-        .list-group-item.bg-outline-dark {
-            font-size: 12px;
-        }
-
-        .card {
-            position: relative;
-        }
-
-        .card img {
-            width: 100%;
-            height: auto;
+            object-fit: cover;
         }
 
         .overlay {
@@ -135,105 +104,121 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
         .card:hover .overlay {
             opacity: 1;
         }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .btn-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .form-control,
+        .btn {
+            font-size: 16px;
+        }
+
+        .form-control.rounded {
+            font-size: 16px;
+        }
+
+        .custom-select {
+            font-size: 16px;
+        }
+
+        .list-group-item {
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="card-body">
-            <div class="card-body" style="position: relative;">
-                <img src="assets/img/iklan/kynnannn.png" alt="Daftar Produk" style="width: 100%; height: auto;">
-                <h2 class="card-title" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; color: white; font-size: 60px; text-align: center; width: 100%; padding: 0 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Daftar Produk</h2>
-            </div>
-            <div class="card-body">
-                <form action="" method="get" class="mb-3">
-                    <div class="form-row align-items-center">
-                        <!-- Form Cari -->
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <input type="search" name="cari" class="form-control rounded" placeholder="Cari Produk.." aria-label="Search" aria-describedby="search-addon" />
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-outline-primary">Cari</button>
-                                    <a href="produk.php" class="btn btn-outline-primary">Lihat Semua</a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Form Pilih Kategori -->
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <select class="custom-select" id="category" name="category">
-                                    <option value="">Pilih Kategori</option>
-                                    <?php foreach ($categories as $category) : ?>
-                                        <option value="<?php echo $category['id_kategori']; ?>" <?php if (isset($_GET['category']) && $_GET['category'] == $category['id_kategori']) echo 'selected'; ?>><?php echo $category['nama_kategori']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-outline-primary">Filter</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="row" id="produk">
-                    <!-- Looping untuk Menampilkan Produk -->
-                    <?php foreach ($query_paginated as $isi) : ?>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card h-100">
-                                <a href="detail.php?id=<?php echo $isi['id_produk']; ?>" style="position: relative; display: block;">
-                                    <img src="admin/assets/image/<?php echo $isi['gambar']; ?>" class="card-img-top" alt="...">
-                                    <div class="overlay">Tap to see detail</div>
-                                </a>
-                                <div class="card-body">
-                                    <div class="btn-container">
-                                        <div class="btn <?= $isi['status'] == 'PO' ? 'btn-danger' : 'btn-primary' ?> btn-primary btn-sm mt-2 ml-2">
-                                            <strong><?= $isi['status'] == 'PO' ? 'PO' : 'Tidak PO' ?></strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item bg-outline-secondary"><strong><?php echo $isi['nama_produk']; ?></strong></li>
-                                </ul>
-                                <hr>
-                                <div class="card-body">
-                                    <li class="list-group-item bg-outline-dark"><i class=""></i> Kategori: <?php echo $isi['nama_kategori']; ?></li>
-                                    <li class="list-group-item bg-outline-dark">
-                                        <i class=""></i> Harga: Rp. <?php echo number_format($isi['harga_jual']); ?>
-                                    </li>
-                                </div>
-                                <!-- Form untuk Menambahkan Produk ke Keranjang -->
-                                <div class="card-body">
-                                    <form id="form_<?php echo $isi['id_produk']; ?>">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control" id="jumlah_<?php echo $isi['id_produk']; ?>" name="jumlah" value="1" min="1">
-                                            <div class="input-group-append">
-                                                <button type="button" class="btn btn-success tambah-ke-keranjang" data-id="<?php echo $isi['id_produk']; ?>"><i class="fa fa-opencart"></i></button>
-                                            </div>
-                                        </div>
-                                        <input type="hidden" name="id_produk" value="<?php echo $isi['id_produk']; ?>">
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <!-- Pagination -->
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <?php if ($page > 1) : ?>
-                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page - 1); ?>">&laquo;</a></li>
-                        <?php endif; ?>
-                        <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>"><a class="page-link" href="<?php echo $pagination_link_page . $i; ?>"><?php echo $i; ?></a></li>
-                        <?php endfor; ?>
-                        <?php if ($page < $total_pages) : ?>
-                            <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page + 1); ?>">&raquo;</a></li>
-                        <?php endif; ?>
-                    </ul>
-                </nav>
+    <div class="container my-4">
+        <div class="card mb-4">
+            <img src="assets/img/iklan/kynnannn.png" alt="Daftar Produk" class="card-img-top">
+            <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                <h2 class="card-title text-white font-weight-bold" style="font-size: 48px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Daftar Produk</h2>
             </div>
         </div>
+
+        <form action="" method="get" class="mb-4">
+            <div class="form-row align-items-center">
+                <div class="col-md-6 mb-3">
+                    <div class="input-group">
+                        <input type="search" name="cari" class="form-control rounded" placeholder="Cari Produk.." aria-label="Search" aria-describedby="search-addon" />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-outline-primary">Cari</button>
+                            <a href="produk.php" class="btn btn-outline-primary">Lihat Semua</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="input-group">
+                        <select class="custom-select" id="category" name="category">
+                            <option value="">Pilih Kategori</option>
+                            <?php foreach ($categories as $category) : ?>
+                                <option value="<?php echo $category['id_kategori']; ?>" <?php if (isset($_GET['category']) && $_GET['category'] == $category['id_kategori']) echo 'selected'; ?>><?php echo $category['nama_kategori']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-outline-primary">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row" id="produk">
+            <?php foreach ($query_paginated as $isi) : ?>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <a href="detail.php?id=<?php echo $isi['id_produk']; ?>" class="position-relative d-block">
+                            <img src="admin/assets/image/<?php echo $isi['gambar']; ?>" class="card-img-top" alt="<?php echo $isi['nama_produk']; ?>">
+                            <div class="overlay">Tap to see detail</div>
+                        </a>
+                        <div class="card-body">
+                            <div class="btn-container">
+                                <div class="btn <?= $isi['status'] == 'PO' ? 'btn-danger' : 'btn-primary' ?> btn-sm">
+                                    <strong><?= $isi['status'] == 'PO' ? 'PO' : 'Tidak PO' ?></strong>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush mt-2">
+                                <li class="list-group-item"><strong><?php echo $isi['nama_produk']; ?></strong></li>
+                                <li class="list-group-item">Kategori: <?php echo $isi['nama_kategori']; ?></li>
+                                <li class="list-group-item">Harga: Rp. <?php echo number_format($isi['harga_jual']); ?></li>
+                            </ul>
+                            <form id="form_<?php echo $isi['id_produk']; ?>" class="mt-3">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="jumlah_<?php echo $isi['id_produk']; ?>" name="jumlah" value="1" min="1">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-success tambah-ke-keranjang" data-id="<?php echo $isi['id_produk']; ?>"><i class="fa fa-opencart"></i></button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="id_produk" value="<?php echo $isi['id_produk']; ?>">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <?php if ($page > 1) : ?>
+                    <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page - 1); ?>">&laquo;</a></li>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
+                    <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>"><a class="page-link" href="<?php echo $pagination_link_page . $i; ?>"><?php echo $i; ?></a></li>
+                <?php endfor; ?>
+                <?php if ($page < $total_pages) : ?>
+                    <li class="page-item"><a class="page-link" href="<?php echo $pagination_link_page . ($page + 1); ?>">&raquo;</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </div>
+
 
     <?php include 'footer.php'; ?>
 
@@ -254,6 +239,7 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                     .then(data => {
                         if (data.status === 'success') {
                             refreshHeader();
+                            refreshFooter();
                         } else {
                             alert(data.pesan);
                         }
@@ -268,7 +254,7 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
             fetch('header.php')
                 .then(response => response.text())
                 .then(html => {
-                    console.log('Header HTML:', html); // Logging the HTML response
+
                     document.querySelector('header').innerHTML = html;
                 })
                 .catch(error => {
@@ -276,12 +262,36 @@ $pagination_link_page = $pagination_link . (empty($query_params) ? '' : '&') . '
                 });
         }
 
-
         function refreshFooter() {
-            fetch('footer.php')
-                .then(response => response.text())
+            fetch('mobile_popup.php', {
+                    cache: 'no-store'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
                 .then(html => {
-                    document.querySelector('footer').innerHTML = html;
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+
+                    // Extract the floating icons section from the fetched HTML
+                    const newFloatingIcons = tempDiv.querySelector('.cart-float');
+
+                    // Check if the new floating icons section exists
+                    if (newFloatingIcons) {
+                        const oldFloatingIcons = document.querySelector('.cart-float');
+                        if (oldFloatingIcons) {
+                            // Update the existing floating icons container
+                            oldFloatingIcons.innerHTML = newFloatingIcons.innerHTML;
+                        } else {
+                            // Append the new icons container if the old one doesn't exist
+                            document.body.appendChild(newFloatingIcons);
+                        }
+                    } else {
+                        console.error('No floating icons container found in the fetched HTML.');
+                    }
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);

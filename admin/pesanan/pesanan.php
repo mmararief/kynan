@@ -120,7 +120,7 @@ LIMIT 0, 10;
                                             <td id="status-<?= $isi['transaksi_id']; ?>"><?php echo $isi['status']; ?></td>
                                             <td><?php echo number_format($isi['total_belanja'], 0, ',', '.'); ?></td>
                                             <td>
-                                                <a class="btn btn-primary btn-sm" role="button" onclick="prosesPesanan('<?php echo $isi['whatsapp']; ?>')">Proses</a>
+                                                <a class="btn btn-primary btn-sm" role="button" onclick="prosesPesanan('<?php echo $isi['transaksi_id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['total_belanja']; ?>', '<?php echo $isi['whatsapp']; ?>')">Proses</a>
                                                 <a class="btn btn-danger btn-sm" role="button" onclick="hapusPesanan(<?php echo $isi['transaksi_id']; ?>)">Hapus</a>
                                                 <a class="btn btn-success btn-sm" role="button" onclick="selesaiPesanan('<?php echo $isi['transaksi_id']; ?>', '<?php echo $isi['tanggal']; ?>', '<?php echo $isi['nama_produk']; ?>', '<?php echo $isi['total_belanja']; ?>', '<?php echo $isi['whatsapp']; ?>')">Selesai</a>
                                             </td>
@@ -208,15 +208,15 @@ LIMIT 0, 10;
         });
     }
 
-    function prosesPesanan(whatsapp) {
-        const message = "Pesanan Sedang di Proses";
-        const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-    }
+    // function prosesPesanan(whatsapp) {
+    //     const message = "Pesanan Sedang di Proses";
+    //     const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
+    //     window.open(url, '_blank');
+    // }
 
-    function selesaiPesanan(id, tanggal, nama_produk, jumlah, whatsapp) {
+    function prosesPesanan(id, tanggal, nama_produk, jumlah, whatsapp) {
         $.ajax({
-            url: 'proses.php?aksi=selesai',
+            url: 'proses.php?aksi=proses',
             type: 'POST',
             data: {
                 id: id,
@@ -229,10 +229,10 @@ LIMIT 0, 10;
                 console.log('Server Response:', response); // Log the response for 
                 Swal.fire(
                     'Success',
-                    'Pesanan telah selesai',
+                    'Pesanan telah di proses',
                     'success'
                 ).then(() => {
-                    document.getElementById('status-' + id).innerText = 'Selesai';
+                    document.getElementById('status-' + id).innerText = 'Proses';
                 });
             }
         });

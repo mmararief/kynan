@@ -1,9 +1,14 @@
 <?php
-
 session_start();
 require 'koneksi/koneksi.php';
+
 $jumlah_keranjang = isset($_SESSION['keranjang']) ? count($_SESSION['keranjang']) : 0;
 
+header('Cache-Control: no-cache, must-revalidate');
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Content-Type: text/html');
+
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,44 +75,6 @@ $jumlah_keranjang = isset($_SESSION['keranjang']) ? count($_SESSION['keranjang']
     </style>
 </head>
 
-<!-- Footer -->
-<footer id="footer">
-    <div class="footer-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 footer-contact" data-aos="fade-up">
-                    <h4>Alamat dan Rekening Pembayaran</h4>
-                    <p>
-                        <?= $info_web->alamat; ?><br>
-                        <strong>Phone:</strong> <?= $info_web->hp; ?><br>
-                        <strong>Email:</strong> <?= $info_web->email; ?><br>
-                        <strong>Atas Nama :</strong> <?= $info_web->an; ?>
-                    </p>
-                    <p>
-                        <a href="sertifikathalal.pdf" download>Unduh Sertifikat Halal</a>
-                    </p>
-                </div>
-
-                <div class="col-lg-3 col-md-6 footer-links" data-aos="fade-up" data-aos-delay="300">
-                    <h4>Tentang Kami</h4>
-                    <p>Dapur Kynan adalah UMKM Kreatif yang berdiri sejak 2015 di Bekasi yang menyediakan cemilan homemade dengan bahan berkualitas tinggi.</p>
-                    <div class="social-links mt-3">
-                        <a target="_blank" href="<?= $info_web->wa; ?>" class="instagram"><i class="fa fa-whatsapp"></i></a>
-                        <a target="_blank" href="<?= $info_web->ig; ?>" class="instagram"><i class="fa fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container py-4">
-        <div class="copyright">
-            <strong><span></span></strong> Copyright <i class="fa fa-copyright"></i> <?php echo date("Y"); ?> | Aplikasi <?= $info_web->title; ?>.
-        </div>
-        <div class="credits">
-            <?= $info_web->title; ?></a>
-        </div>
-    </div>
-</footer><!-- End Footer -->
 
 <!-- Floating Icons -->
 <a href="<?= $info_web->wa; ?>" class="whatsapp-float" data-toggle="tooltip" title="WhatsApp" target="_blank">
