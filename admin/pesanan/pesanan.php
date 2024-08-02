@@ -215,26 +215,65 @@ LIMIT 0, 10;
     // }
 
     function prosesPesanan(id, tanggal, nama_produk, jumlah, whatsapp) {
-        $.ajax({
-            url: 'proses.php?aksi=proses',
-            type: 'POST',
-            data: {
-                id: id,
-                tanggal: tanggal,
-                nama_produk: nama_produk,
-                jumlah: jumlah
+    $.ajax({
+        url: 'proses.php?aksi=proses',
+        type: 'POST',
+        data: {
+            id: id,
+            tanggal: tanggal,
+            nama_produk: nama_produk,
+            jumlah: jumlah
+        },
+        success: function(response) {
+            console.log('Server Response:', response);
+            Swal.fire(
+                'Success',
+                'Pesanan telah diproses',
+                'success'
+            ).then(() => {
+                document.getElementById('status-' + id).innerText = 'Proses';
+            });
+        },
+        error: function(error) {
+            console.error('Error:', error);
+            Swal.fire(
+                'Error',
+                'Terjadi kesalahan saat memproses pesanan',
+                'error'
+            );
+        }
+    });
+}
 
-            },
-            success: function(response) {
-                console.log('Server Response:', response); // Log the response for 
-                Swal.fire(
-                    'Success',
-                    'Pesanan telah di proses',
-                    'success'
-                ).then(() => {
-                    document.getElementById('status-' + id).innerText = 'Proses';
-                });
-            }
-        });
-    }
+function selesaiPesanan(id, tanggal, nama_produk, jumlah, whatsapp) {
+    $.ajax({
+        url: 'selesai.php?aksi=selesai',
+        type: 'POST',
+        data: {
+            id: id,
+            tanggal: tanggal,
+            nama_produk: nama_produk,
+            jumlah: jumlah
+        },
+        success: function(response) {
+            console.log('Server Response:', response);
+            Swal.fire(
+                'Success',
+                'Pesanan telah selesai',
+                'success'
+            ).then(() => {
+                document.getElementById('status-' + id).innerText = 'Selesai';
+            });
+        },
+        error: function(error) {
+            console.error('Error:', error);
+            Swal.fire(
+                'Error',
+                'Terjadi kesalahan saat menyelesaikan pesanan',
+                'error'
+            );
+        }
+    });
+}
+
 </script>
