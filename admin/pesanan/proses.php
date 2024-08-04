@@ -258,6 +258,78 @@ WHERE d.id_transaksi = ?";
                     ];
 
                     // Send the data to the API
+                    $url = 'http://localhost:8000/success-order';
+                    $options = [
+                        'http' => [
+                            'header' => "Content-type: application/json\r\n",
+                            'method' => 'POST',
+                            'content' => json_encode($data),
+                        ],
+                    ];
+                    $context = stream_context_create($options);
+                    $result = file_get_contents($url, false, $context);
+
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to update order status']);
+                }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            }
+            break;
+
+
+
+        case 'proses':
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $id = $_POST['id'];
+                $tanggal = $_POST['tanggal'];
+                $nama_produk = $_POST['nama_produk'];
+                $jumlah = $_POST['jumlah'];
+
+                // Fetch the transaction details
+                $sql_transaksi = "SELECT * FROM transaksi WHERE id_transaksi = ?";
+                $stmt_transaksi = $koneksi->prepare($sql_transaksi);
+                $stmt_transaksi->execute([$id]);
+                $hasil_transaksi = $stmt_transaksi->fetch();
+
+                // Fetch the details of the transaction
+                $sql_detail = "SELECT d.id_produk, p.nama_produk, d.jumlah, d.harga, d.subtotal
+FROM detailtransaksi d
+JOIN produk p ON d.id_produk = p.id_produk
+WHERE d.id_transaksi = ?";
+                $stmt_detail = $koneksi->prepare($sql_detail);
+                $stmt_detail->execute([$id]);
+                $detail_transaksi = $stmt_detail->fetchAll();
+
+                // Update the transaction status
+                $sql_update = "UPDATE transaksi SET status = 'Proses' WHERE id_transaksi = ?";
+                $stmt_update = $koneksi->prepare($sql_update);
+                $stmt_update->execute([$id]);
+
+                if ($stmt_update) {
+                    // Prepare detailed data for API request
+                    $data = [
+                        'id_transaksi' => $id,
+                        'via' => $hasil_transaksi['via'],
+                        'nama' => $hasil_transaksi['nama'],
+                        'tanggal' => $hasil_transaksi['tanggal'],
+                        'whatsapp' => $hasil_transaksi['whatsapp'],
+                        'alamat' => $hasil_transaksi['alamat'],
+                        'metode_pembayaran' => $hasil_transaksi['metode_pembayaran'],
+                        'status' => 'Selesai',
+                        'total' => $hasil_transaksi['total'],
+                        'details' => array_map(function ($item) {
+                            return [
+                                'nama_produk' => $item['nama_produk'],
+                                'jumlah' => $item['jumlah'],
+                                'harga_satuan' => $item['harga'],
+                                'subtotal' => $item['subtotal']
+                            ];
+                        }, $detail_transaksi)
+                    ];
+
+                    // Send the data to the API
                     $url = 'http://localhost:8000/send-invoice';
                     $options = [
                         'http' => [
